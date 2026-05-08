@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>清闲人体工学椅 - 用户调研数据可视化看板</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0A0E1A;
+            color: #E2E8F0;
+            overflow-x: hidden;
+        }
+
+        .bg-grid {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image:
+                linear-gradient(rgba(99, 101, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99, 101, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: 0;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(40px, 40px); }
+        }
+
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 0;
+            animation: orbFloat 8s ease-in-out infinite;
+        }
+
+        .orb-1 {
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(99, 101, 255, 0.15), transparent);
+            top: -100px; right: -100px;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(232, 121, 249, 0.1), transparent);
+            bottom: -50px; left: -50px;
+            animation-delay: 2s;
+        }
+
+        .orb-3 {
+            width: 250px; height: 250px;
+            background: radial-gradient(circle, rgba(34, 211, 238, 0.08), transparent);
+            top: 50%; left: 50%;
+            animation-delay: 4s;
+        }
+
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, -20px) scale(1.1); }
+        }
+
+        .glass-card {
+            background: rgba(15, 18, 35, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(99, 101, 255, 0.15);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            border-color: rgba(99, 101, 255, 0.3);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4),
+                        0 0 20px rgba(99, 101, 255, 0.1),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .kpi-card {
+            background: linear-gradient(135deg, rgba(99, 101, 255, 0.1), rgba(232, 121, 249, 0.05));
+            border: 1px solid rgba(99, 101, 255, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #6365FF, #E879F9, #22D3EE);
+        }
+
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #6365FF, #E879F9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .kpi-label {
+            font-size: 0.875rem;
+            color: #94A3B8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 4px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .section-icon {
+            width: 40px; height: 40px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #F1F5F9;
+        }
+
+        .section-subtitle {
+            font-size: 0.875rem;
+            color: #64748B;
+        }
+
+        .insight-box {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 211, 238, 0.05));
+            border-left: 3px solid #22C55E;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .insight-box h4 {
+            color: #22C55E;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .insight-box p {
+            color: #94A3B8;
+            font-size: 0.8125rem;
+            line-height: 1.6;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 280px;
+            width: 100%;
+        }
+
+        .chart-container-sm {
+            height: 220px;
+        }
+
+        .bar-chart-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .bar-label {
+            min-width: 100px;
+            font-size: 0.75rem;
+            color: #94A3B8;
+            text-align: right;
+        }
+
+        .bar-track {
+            flex: 1;
+            height: 24px;
+            background: rgba(30, 35, 60, 0.8);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 8px;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            color: white;
+            transition: width 1s ease-out;
+            min-width: fit-content;
+        }
+
+        .bar-value {
+            min-width: 50px;
+            font-size: 0.75rem;
+            color: #64748B;
+            text-align: left;
+        }
+
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+        .delay-5 { animation-delay: 0.5s; }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .badge-gradient {
+            background: linear-gradient(135deg, rgba(99, 101, 255, 0.3), rgba(232, 121, 249, 0.2));
+            color: #C7D2FE;
+        }
+
+        .tab-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            background: transparent;
+            color: #64748B;
+        }
+
+        .tab-btn.active {
+            background: rgba(99, 101, 255, 0.2);
+            color: #A5B4FC;
+        }
+
+        .tab-btn:hover:not(.active) {
+            color: #94A3B8;
+        }
+
+        @media (max-width: 768px) {
+            .kpi-value { font-size: 1.75rem; }
+            .chart-container { height: 220px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-4 py-8">
+        <header class="mb-8 fade-in-up">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-[#6365FF] to-[#E879F9] flex items-center justify-center text-xl">
+                    🪑
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-white">清闲人体工学椅 - 用户调研看板</h1>
+                    <p class="text-sm text-slate-400 mt-1">基于 1,251 份有效问卷数据的深度分析</p>
+                </div>
+                <span class="ml-auto badge badge-gradient">2026年数据</span>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="kpi-card fade-in-up delay-1">
+                <div class="kpi-value">1,251</div>
+                <div class="kpi-label">总样本量</div>
+            </div>
+            <div class="kpi-card fade-in-up delay-2">
+                <div class="kpi-value">87.6%</div>
+                <div class="kpi-label">男性占比</div>
+            </div>
+            <div class="kpi-card fade-in-up delay-3">
+                <div class="kpi-value">74.8%</div>
+                <div class="kpi-label">26-40岁占比</div>
+            </div>
+            <div class="kpi-card fade-in-up delay-4">
+                <div class="kpi-value">494</div>
+                <div class="kpi-label">Bilibili认知</div>
+            </div>
+        </div>
+
+        <!-- Batch Navigation -->
+        <div class="glass-card p-6 mb-6 fade-in-up delay-5">
+            <div class="section-header">
+                <div class="section-icon" style="background: linear-gradient(135deg, rgba(99,101,255,0.2), rgba(34,211,238,0.1));">
+                    📁
+                </div>
+                <div>
+                    <div class="section-title">批次看板</div>
+                    <div class="section-subtitle">Batch Dashboards</div>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <a href="第一批_看板.html" class="kpi-card hover:border-[#6365FF] transition-all cursor-pointer group">
+                    <div class="kpi-value group-hover:scale-110 transition-transform">第一批</div>
+                    <div class="kpi-label">373 份问卷</div>
+                </a>
+                <a href="第二批_看板.html" class="kpi-card hover:border-[#E879F9] transition-all cursor-pointer group">
+                    <div class="kpi-value group-hover:scale-110 transition-transform">第二批</div>
+                    <div class="kpi-label">467 份问卷</div>
+                </a>
+                <a href="第三批_看板.html" class="kpi-card hover:border-[#22D3EE] transition-all cursor-pointer group">
+                    <div class="kpi-value group-hover:scale-110 transition-transform">第三批</div>
+                    <div class="kpi-label">275 份问卷</div>
+                </a>
+                <a href="第四批_看板.html" class="kpi-card hover:border-[#22C55E] transition-all cursor-pointer group">
+                    <div class="kpi-value group-hover:scale-110 transition-transform">第四批</div>
+                    <div class="kpi-label">138 份问卷</div>
+                </a>
+                <a href="interviews.html" class="kpi-card hover:border-[#FB923C] transition-all cursor-pointer group">
+                    <div class="kpi-value group-hover:scale-110 transition-transform">用户访谈</div>
+                    <div class="kpi-label">14 场深度访谈</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Row 1: Gender & Age -->
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+            <div class="glass-card p-6 fade-in-up delay-2">
+                <div class="section-header">
+                    <div class="section-icon" style="background: linear-gradient(135deg, rgba(99,101,255,0.2), rgba(232,121,249,0.1));">
+                        👥
+                    </div>
+                    <div>
+                        <div class="section-title">性别分布</div>
+                        <div class="section-subtitle">Gender Distribution</div>
+                    </div>
+                </div>
+                <div class="chart-container chart-container-sm">
+                    <canvas id="genderChart"></canvas>
+                </div>
+                <div class="insight-box">
+                    <h4>💡 洞察</h4>
+                    <p>男性用户占比87.6%，是工学椅消费的主力群体。产品设计和营销策略应重点关注男性用户的偏好。</p>
+                </div>
+            </div>
+
+            <div class="glass-card p-6 fade-in-up delay-3">
+                <div class="section-header">
+                    <div class="section-icon" style="background: linear-gradient(135deg, rgba(34,211,238,0.2), rgba(34,197,94,0.1));">
+                        🎂
+                    </div>
+                    <div>
+                        <div class="section-title">年龄分布</div>
+                        <div class="section-subtitle">Age Distribution</div>
+                    </div>
+                </div>
+                <div class="chart-container chart-container-sm">
+                    <canvas id="ageChart"></canvas>
+                </div>
+                <div class="insight-box">
+                    <h4>💡 洞察</h4>
+                    <p>26-40岁用户是核心群体，占比74.8%。这个年龄段具有稳定的经济基础，是工学椅的主要消费人群。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 2: Province & Occupation -->
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+            <div class="glass-card p-6 fade-in-up delay-3">
+                <div class="section-header">
+                    <div class="section-icon" style="background: linear-gradient(135deg, rgba(251,146,60,0.2), rgba(239,68,68,0.1));">
+                        🗺️
+                    </div>
+                    <div>
+                        <div class="section-title">省份分布 TOP 10</div>
+                        <div class="section-subtitle">Geographic Distribution</div>
+                    </div>
+                </div>
+                <div id="provinceChart"></div>
+                <div class="insight-box">
+                    <h4>💡 洞察</h4>
+                    <p>用户主要集中在经济发达地区，这些地区消费能力强、健康意识高，是工学椅的核心市场。</p>
+                </div>
+            </div>
+
+            <div class="glass-card p-6 fade-in-up delay-4">
+                <div class="section-header">
+                    <div class="section-icon" style="background: linear-gradient(135deg, rgba(168,85,247,0.2), rgba(232,121,249,0.1));">
+                        💼
+                    </div>
+                    <div>
+                        <div class="section-title">职业分布 TOP 8</div>
+                        <div class="section-subtitle">Occupation Distribution</div>
+                    </div>
+                </div>
+                <div id="occupationChart"></div>
+                <div class="insight-box">
+                    <h4>💡 洞察</h4>
+                    <p>研发岗、职能岗、企业管理是前三职业类型，久坐办公人群是工学椅的核心目标用户。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 3: Body Metrics -->
+        <div class="grid md:grid-cols-3 gap-6 mb-6">
+            <div class="glass-card p-6 fade-in-up delay-4">
+                <div class="section-header">
+                    <div class="section-icon" style="background: linear-gradient(135deg, rgba(34,197,94,0.2), rgba(34,211,238,0.1));">
+                        📏
+                    </div>
+                    <div>
+                        <div class="section-title">身高分布</div>
+                        <div class="section-subtitle">Height Distribution (cm)</div>
+                    </div>
+                </div>
+                <div class="chart-container chart-container-sm">
+                    <canvas id="heightChart"></canvas>
+                </div>
+            </div>
+
+            <div class="glass-card p-6 fade-in-up delay-5">
+                <div class="section-header">
+                    <div class="section-icon" style="background: linear-gradient(135deg, rgba(251,146,60,0.2), rgba(239,68,68,0.1));">
+                        ⚖️
+                    </div>
+                    <div>
+                        <div class="section-title">体重分布</div>
+                        <div class="section-subtitle">Weight Distribution (kg)</div>
+                    </div>
+                </div>
+                <div class="chart-container chart-container-sm">
+                    <canvas id="weightChart"></canvas>
+                </div>
+            </div>
+
+            <div class="glass-card p-6 fade-in-up delay-5">
+                <div class="section-header">
+                    <div class="section-icon" style="background: linear-gradient(135deg, rgba(232,121,249,0.2), rgba(99,101,255,0.1));">
+                        🏥
+                    </div>
+                    <div>
+                        <div class="section-title">BMI 分布</div>
+                        <div class="section-subtitle">BMI Categories</div>
+                    </div>
+                </div>
+                <div class="chart-container chart-container-sm">
+                    <canvas id="bmiChart"></canvas>
+                </div>
+                <div class="insight-box">
+                    <h4>💡 洞察</h4>
+                    <p>超重和肥胖人群合计占比较高，产品设计需充分考虑大体重人群的承重和支撑需求。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 4: Channel & Buy Chair Reasons -->
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+            <div class="glass-card p-6 fade-in-up delay-4">
+                <div class="section-header">
+                    <div class="section-icon" style="background: linear-gradient(135deg, rgba(239,68,68,0.2), rgba(251,146,60,0.1));">
+                        📱
+                    </div>
+                    <div>
+                        <div class="section-title">认知渠道分布</div>
+                        <div class="section-subtitle">Awareness Channels</div>
+                    </div>
+                </div>
+                <div class="chart-container chart-container-sm">
+                    <canvas id="channelChart"></canvas>
+                </div>
+                <div class="insight-box">
+                    <h4>💡 洞察</h4>
+                    <p>Bilibili是绝对主流认知渠道，视频内容营销是获取用户的核心手段。应持续投入B站内容生态建设。</p>
+                </div>
+            </div>
+
+            <div class="glass-card p-6 fade-in-up delay-5">
+                <div class="section-header">
+                    <div class="section-icon" style="background: linear-gradient(135deg, rgba(99,101,255,0.2), rgba(34,211,238,0.1));">
+                        🪑
+                    </div>
+                    <div>
+                        <div class="section-title">为什么买工学椅</div>
+                        <div class="section-subtitle">Reasons for Buying Chair</div>
+                    </div>
+                </div>
+                <div id="buyChairChart"></div>
+                <div class="insight-box">
+                    <h4>💡 洞察</h4>
+                    <p>久坐场景需求和身体疼痛/劳损是用户购买工学椅的两大核心驱动力，营销应聚焦健康痛点。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 5: Buy Qingxian Reasons & Batch -->
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+            <div class="glass-card p-6 fade-in-up delay-5">
+                <div class="section-header">
+                    <div class="section-icon" style="background: linear-gradient(135deg, rgba(34,197,94,0.2), rgba(168,85,247,0.1));">
+                        ✨
+                    </div>
+                    <div>
+                        <div class="section-title">为什么买清闲</div>
+                        <div class="section-subtitle">Reasons for Buying Qingxian</div>
+                    </div>
+                </div>
+                <div id="buyQingxianChart"></div>
+                <div class="insight-box">
+                    <h4>💡 洞察</h4>
+                    <p>电动顶腰功能和动态人机概念是清闲椅最吸引用户的差异化卖点，应作为核心传播点。</p>
+                </div>
+            </div>
+
+            <div class="glass-card p-6 fade-in-up delay-5">
+                <div class="section-header">
+                    <div class="section-icon" style="background: linear-gradient(135deg, rgba(232,121,249,0.2), rgba(251,146,60,0.1));">
+                        📊
+                    </div>
+                    <div>
+                        <div class="section-title">批次分布</div>
+                        <div class="section-subtitle">Batch Distribution</div>
+                    </div>
+                </div>
+                <div class="chart-container chart-container-sm">
+                    <canvas id="batchChart"></canvas>
+                </div>
+                <div class="insight-box">
+                    <h4>💡 洞察</h4>
+                    <p>数据覆盖4个批次共1,251位用户，第二批用户最多。各批次用户特征可用于趋势分析。</p>
+                </div>
+            </div>
+        
+
+<footer class="text-center py-8 text-slate-500 text-sm fade-in-up delay-5">
+            <p>数据来源：清闲人体工学椅用户调研 | 样本量：1,251 | 数据收集时间：2026年</p>
+            <p class="mt-2">本报告仅供内部决策参考</p>
+        </footer>
+    </div>
+
+    <script>
+        Chart.defaults.color = '#64748B';
+        Chart.defaults.borderColor = 'rgba(99, 101, 255, 0.1)';
+        Chart.defaults.font.family = 'Inter';
+
+        const colors = {
+            primary: '#6365FF',
+            secondary: '#E879F9',
+            tertiary: '#22D3EE',
+            green: '#22C55E',
+            orange: '#FB923C',
+            red: '#EF4444',
+            purple: '#A855F7',
+        };
+
+        function createGradient(ctx, color1, color2) {
+            const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+            gradient.addColorStop(0, color1);
+            gradient.addColorStop(1, color2);
+            return gradient;
+        }
+
+        // Data
+        const genderData = {"男": 1096, "女": 155};
+        const ageData = {"26-30": 381, "31-35": 304, "36-40": 249, "41-45": 142, "25岁及以下": 116, "46-50": 29, "51岁及以上": 28, "26~30": 1, "31~35": 1};
+        const provinceData = {"广东": 250, "上海": 164, "北京": 148, "浙江": 118, "江苏": 97, "四川": 72, "湖北": 40, "陕西": 37, "天津": 31, "山东": 30};
+        const occupationData = {"企业研发岗：各类软硬件、研发工程师，产品经理等": 168, "企业职能岗：行政/人力/财务/公关/客服等": 148, "企业管理岗": 140, "企业前端岗：市场/运营/销售/品牌/采购/供应链/店员等": 136, "政府/事业编单位人员": 98, "平面/工业/室内设计师": 93, "长期居家办公者": 76, "在校教师或学生": 74, "技术开发/工程师": 69, "其他": 50};
+        const heightData = {"140-155": 3, "155-160": 26, "160-165": 77, "165-170": 143, "170-175": 347, "175-180": 350, "180-185": 226, "185-190": 56, "190+": 23};
+        const weightData = {"30-50": 16, "50-60": 114, "60-70": 273, "70-80": 348, "80-90": 237, "90-100": 110, "100-110": 51, "110+": 44};
+        const bmiData = {"偏瘦 (<18.5)": 33, "正常 (18.5-24)": 561, "超重 (24-28)": 388, "肥胖 (>=28)": 269};
+        const channelData = {"Bilibili": 494, "抖音": 179, "淘宝/京东/天猫": 109, "小红书": 103, "线下门店": 80, "同事/朋友/亲属推荐": 77, "微信/朋友圈/视频号": 32, "没印象了": 16, "微博": 6, "办公场所/朋友家等地方见到": 6};
+        const buyChairData = [{"label": "久坐场景需求", "value": 602}, {"label": "身体疼痛/劳损", "value": 508}, {"label": "现有椅子不舒服", "value": 364}, {"label": "保持良好体态", "value": 344}, {"label": "品质/体验升级", "value": 259}, {"label": "产品吸引", "value": 113}, {"label": "新家/装修", "value": 85}, {"label": "其他", "value": 58}, {"label": "首次尝试体验", "value": 50}, {"label": "替换旧椅", "value": 49}, {"label": "他人推荐", "value": 48}, {"label": "场景添置", "value": 37}];
+        const buyQingxianData = [{"label": "电动顶腰功能", "value": 658}, {"label": "动态人机概念", "value": 615}, {"label": "大角度躺倒功能", "value": 473}, {"label": "海绵坐感/包裹感", "value": 381}, {"label": "外观设计好看", "value": 342}, {"label": "一体式椅背", "value": 340}, {"label": "脊柱拉伸功能", "value": 307}, {"label": "腰背支撑好", "value": 232}, {"label": "独立式脚踏", "value": 215}, {"label": "千人千背调节", "value": 190}, {"label": "支持国货", "value": 167}, {"label": "四档角度调节", "value": 94}, {"label": "颜色好看", "value": 65}, {"label": "其他", "value": 32}];
+        const batchData = {"第二批": 467, "第一批": 373, "第三批": 275, "第四批": 136};
+        const incomeData = {"不方便透露": 78, "10,000－14,999元": 62, "50,000元及以上": 58, "20,000-29,999元": 54, "5,000-9,000元": 49, "15,000－19,999元": 38, "30,000-39,999元": 30, "5,000元及以下": 22, "40,000-49,999元": 14, "无固定收入": 6};
+        const categoryExpData = {"购买过人体工学椅": 216, "没有购买过人体工学椅，但有一些了解": 100, "没有购买过人体工学椅，但有了解过": 67, "购买过人体工学椅〖西昊〗": 42, "腰靠/护腰垫": 29, "不了解人体工学椅": 18, "购买过人体工学椅┋购买过腰靠/护腰垫/护颈枕": 18, "枕头/床垫": 18, "没有购买过人体工学椅，但有一些了解┋购买过腰靠/护腰垫/护颈枕": 15, "购买过人体工学椅〖保友〗": 14, "腰靠/护腰垫┋枕头/床垫": 14, "购买过人体工学椅┋购买过按摩椅┋购买过腰靠/护腰垫/护颈枕┋购买过坐垫": 12, "购买过人体工学椅┋购买过腰靠/护腰垫/护颈枕┋购买过坐垫": 12, "没有购买过人体工学椅，但有了解过┋购买过腰靠/护腰垫": 11, "没有购买过人体工学椅，但有了解过┋购买过腰靠/护腰垫┋购买过坐垫": 11, "购买过人体工学椅〖赫曼米勒〗": 11, "腰靠/护腰垫┋坐垫": 10, "购买过人体工学椅┋购买过坐垫": 9, "购买过人体工学椅┋购买过按摩椅┋购买过腰靠/护腰垫┋购买过坐垫": 9, "腰靠/护腰垫┋坐垫┋枕头/床垫": 9, "购买过人体工学椅〖黑白调〗": 8, "人体工学椅〖西昊〗": 8, "没有购买过人体工学椅，也没有了解过": 7, "购买过人体工学椅〖永艺〗": 7, "购买过人体工学椅┋购买过腰靠/护腰垫┋购买过坐垫": 7, "购买过腰靠/护腰垫": 7, "坐垫": 7, "没有购买过人体工学椅，但有了解过┋购买过按摩椅┋购买过腰靠/护腰垫┋购买过坐垫": 6, "购买过腰靠/护腰垫/护颈枕": 6, "(跳过)": 6, "没有购买过人体工学椅，但有一些了解┋购买过腰靠/护腰垫/护颈枕┋购买过坐垫": 6, "腰靠/护腰垫┋眼部按摩仪┋枕头/床垫": 6, "腰靠/护腰垫┋眼部按摩仪": 6, "人体工学椅": 6, "没有购买过人体工学椅，但有一些了解┋购买过按摩椅┋购买过腰靠/护腰垫/护颈枕┋购买过坐垫": 5, "腰靠/护腰垫┋坐垫┋眼部按摩仪┋枕头/床垫": 5, "腰靠/护腰垫┋坐垫┋按摩椅┋眼部按摩仪┋枕头/床垫": 5, "腰靠/护腰垫┋坐垫┋人体工学键盘、鼠标": 5, "购买过人体工学椅〖ergomax〗": 4, "购买过人体工学椅〖宜家〗": 4, "购买过人体工学椅┋购买过腰靠/护腰垫": 4, "人体工学椅〖ergomax〗": 4, "按摩椅┋枕头/床垫": 4, "人体工学键盘、鼠标": 4, "购买过人体工学椅〖enova〗": 3, "购买过人体工学椅〖金豪〗": 3, "购买过人体工学椅〖西昊，永艺〗": 3, "购买过人体工学椅〖冈村〗": 3, "购买过人体工学椅〖京东京造〗": 3, "购买过人体工学椅〖永艺〗┋购买过腰靠/护腰垫┋购买过坐垫": 3, "购买过人体工学椅〖傲风〗": 3, "购买过按摩椅": 3, "没有购买过人体工学椅，但有一些了解┋购买过按摩椅┋购买过腰靠/护腰垫/护颈枕": 3, "没有购买过人体工学椅，但有一些了解┋购买过坐垫": 3, "购买过人体工学椅┋购买过按摩椅┋购买过腰靠/护腰垫/护颈枕": 3, "没有购买过人体工学椅，但有一些了解┋购买过按摩椅": 3, "人体工学椅〖清闲〗": 3, "腰靠/护腰垫┋按摩椅┋枕头/床垫": 3, "腰靠/护腰垫┋按摩椅": 3, "人体工学椅〖黑白调〗": 3, "人体工学椅┋人体工学键盘、鼠标": 3, "腰靠/护腰垫┋人体工学键盘、鼠标": 3, "购买过人体工学椅〖西昊〗┋购买过按摩椅": 2, "购买过人体工学椅〖有谱蝴蝶〗": 2, "没有购买过人体工学椅，但有了解过┋购买过坐垫": 2, "购买过人体工学椅〖西昊〗┋购买过腰靠/护腰垫┋购买过坐垫": 2, "购买过人体工学椅〖hermanmiller〗": 2, "没有购买过人体工学椅，也没有了解过┋购买过腰靠/护腰垫┋购买过坐垫": 2, "购买过人体工学椅〖embody〗": 2, "没有购买过人体工学椅，也没有了解过┋购买过腰靠/护腰垫": 2, "购买过人体工学椅〖西昊〗┋购买过腰靠/护腰垫": 2, "购买过人体工学椅〖米勒〗": 2, "购买过人体工学椅〖赫曼米勒aeron2〗": 2, "购买过人体工学椅〖金豪e〗": 2, "购买过人体工学椅〖保友金豪〗": 2, "购买过人体工学椅〖网易严选〗": 2, "购买过人体工学椅〖Herman miller〗": 2, "购买过腰靠/护腰垫/护颈枕┋购买过坐垫": 2, "其他，请说明〖无〗": 2, "人体工学椅〖西昊〗┋腰靠/护腰垫┋坐垫┋眼部按摩仪┋枕头/床垫": 2, "人体工学椅〖京造〗": 2, "按摩椅": 2, "人体工学椅〖西昊〗┋腰靠/护腰垫┋坐垫┋枕头/床垫": 2, "人体工学椅〖赫曼米勒〗": 2, "坐垫┋枕头/床垫": 2, "眼部按摩仪┋枕头/床垫": 2, "人体工学椅〖保友〗┋腰靠/护腰垫": 2, "人体工学椅〖黑白调〗┋腰靠/护腰垫┋坐垫┋按摩椅┋眼部按摩仪┋枕头/床垫": 2, "腰靠/护腰垫┋坐垫┋眼部按摩仪": 2, "腰靠/护腰垫┋坐垫┋按摩椅┋眼部按摩仪": 2, "腰靠/护腰垫┋坐垫┋按摩椅┋枕头/床垫": 2, "其他，请说明〖没有〗": 2, "人体工学椅〖西昊〗┋枕头/床垫": 2, "腰靠/护腰垫┋枕头/床垫┋人体工学键盘、鼠标": 2, "枕头/床垫┋人体工学键盘、鼠标": 2, "腰靠/护腰垫┋眼部按摩仪┋人体工学键盘、鼠标": 2, "人体工学椅〖西昊〗┋人体工学键盘、鼠标": 2, "腰靠/护腰垫┋眼部按摩仪┋枕头/床垫┋人体工学键盘、鼠标": 2, "购买过人体工学椅〖西昊，京东京造〗": 1, "购买过人体工学椅〖ergomax，西昊，永艺〗": 1, "购买过人体工学椅〖永艺、摩伽〗┋购买过腰靠/护腰垫┋购买过坐垫": 1, "购买过人体工学椅〖赫曼米勒embody，areon1，syal，保友金豪e，蝴蝶椅，黑白调〗": 1, "没有购买过人体工学椅，但有了解过┋购买过按摩椅┋购买过腰靠/护腰垫": 1, "购买过人体工学椅〖黑白调〗┋购买过按摩椅┋购买过腰靠/护腰垫┋购买过坐垫": 1, "购买过人体工学椅〖DXRacer〗┋购买过腰靠/护腰垫": 1, "购买过人体工学椅〖西昊 C300/C500，〗": 1, "购买过人体工学椅〖歌德利.永艺.toai〗": 1, "购买过人体工学椅〖Steelcase，西昊，Herman Miller〗┋购买过按摩椅┋购买过腰靠/护腰垫": 1, "购买过人体工学椅〖忘了〗": 1, "购买过人体工学椅〖西昊v1〗": 1, "购买过人体工学椅〖Ergomax，永艺〗┋购买过腰靠/护腰垫┋购买过坐垫": 1, "购买过人体工学椅〖记不住了〗┋购买过腰靠/护腰垫": 1, "购买过人体工学椅〖ergohuman〗": 1, "购买过人体工学椅〖摩伽，圣临〗": 1, "购买过人体工学椅〖保友金豪e2〗": 1, "购买过人体工学椅〖黑白调，H&M〗┋购买过按摩椅┋购买过腰靠/护腰垫": 1, "购买过人体工学椅〖ergo〗": 1, "购买过人体工学椅〖保友金豪2  西昊s300〗": 1, "购买过人体工学椅〖支家〗": 1, "购买过人体工学椅〖egromax〗": 1, "购买过人体工学椅〖永艺  保友 ergomax〗": 1, "购买过人体工学椅〖国林家具〗┋购买过腰靠/护腰垫": 1, "购买过人体工学椅〖太多了〗": 1, "购买过人体工学椅〖okamura〗": 1, "购买过人体工学椅〖迩高迈斯〗": 1, "购买过人体工学椅〖恋树 永艺〗": 1, "购买过人体工学椅〖有谱蝴蝶椅〗": 1, "购买过人体工学椅〖西昊v1、保友金豪e2〗": 1, "购买过人体工学椅〖贝氪智能托腰办公椅〗": 1, "购买过人体工学椅〖保友，达宝利〗": 1, "购买过人体工学椅〖有谱，保友〗┋购买过腰靠/护腰垫": 1, "购买过人体工学椅〖steelcase Herman miller 西昊〗": 1, "购买过人体工学椅〖保友，黑白调〗": 1, "购买过人体工学椅〖安吉明易〗": 1, "购买过人体工学椅〖西昊、保友〗┋购买过按摩椅┋购买过腰靠/护腰垫┋购买过坐垫": 1, "购买过人体工学椅〖赫勒米曼，黑白调，西昊〗": 1, "购买过人体工学椅〖傲风，永艺〗": 1, "没有购买过人体工学椅，但有了解过┋购买过按摩椅": 1, "购买过人体工学椅〖黑白调〗┋购买过腰靠/护腰垫": 1, "购买过人体工学椅〖赫曼米勒、保友〗": 1, "购买过人体工学椅〖恋树玲珑〗": 1, "购买过人体工学椅〖松林享耀家〗": 1, "购买过人体工学椅〖杂牌〗┋购买过腰靠/护腰垫┋购买过坐垫": 1, "购买过按摩椅┋购买过腰靠/护腰垫┋购买过坐垫": 1, "购买过人体工学椅〖海沃氏 永艺 歌德利  ergomax〗": 1, "购买过人体工学椅〖赫曼米勒，保友〗": 1, "购买过人体工学椅〖西昊、ergomax、赫曼米勒、高田〗": 1, "购买过人体工学椅〖ergoup〗": 1, "购买过人体工学椅┋购买过按摩椅┋购买过腰靠/护腰垫": 1, "购买过人体工学椅〖Ergomax；赫曼米勒〗┋购买过按摩椅┋购买过腰靠/护腰垫": 1, "购买过人体工学椅〖herman〗┋购买过腰靠/护腰垫": 1, "购买过人体工学椅〖Goodtone〗": 1, "购买过人体工学椅〖黑白调，赫曼米勒〗": 1, "购买过人体工学椅〖西昊s300，c500〗┋购买过腰靠/护腰垫┋购买过坐垫": 1, "购买过人体工学椅〖永艺，恒林，西昊，黑白调〗": 1, "购买过人体工学椅〖网易，黑白调，西昊〗": 1, "购买过人体工学椅〖赫曼米勒，海沃氏，西昊〗": 1, "购买过人体工学椅〖黑白调 京造〗": 1, "购买过人体工学椅〖Ergomax Pro max〗": 1, "购买过人体工学椅〖Ergomax〗": 1, "购买过人体工学椅〖赫曼米勒aeron〗┋购买过腰靠/护腰垫": 1, "购买过人体工学椅〖黑白調〗": 1, "购买过人体工学椅〖Ergoup〗": 1, "购买过人体工学椅〖西昊 网易严选〗": 1, "购买过人体工学椅〖联丰，西昊，享耀家，恋树〗": 1, "购买过人体工学椅〖永艺 联优 黑白调〗": 1, "购买过人体工学椅〖恋树，高迈思等〗┋购买过腰靠/护腰垫┋购买过坐垫": 1, "购买过人体工学椅〖保友 永艺〗": 1, "购买过人体工学椅〖达宝利〗┋购买过腰靠/护腰垫┋购买过坐垫": 1, "购买过人体工学椅〖ergo〗┋购买过按摩椅": 1, "购买过人体工学椅〖赫曼米勒，Ergomax〗": 1, "购买过按摩椅┋购买过腰靠/护腰垫": 1, "购买过人体工学椅〖赫曼米勒 西昊 保友 ergomax 恋树 永艺 享耀家〗": 1, "购买过人体工学椅〖保友金豪 歌德利 西昊〗┋购买过腰靠/护腰垫": 1, "购买过人体工学椅〖西昊、黑白调〗": 1, "不了解人体工学椅┋购买过腰靠/护腰垫/护颈枕┋购买过坐垫": 1, "购买过人体工学椅〖西昊〗┋购买过腰靠/护腰垫/护颈枕┋购买过坐垫": 1, "购买过人体工学椅〖1300以内的都试过〗┋购买过腰靠/护腰垫/护颈枕┋购买过坐垫": 1, "购买过人体工学椅〖ergomax〗┋购买过腰靠/护腰垫/护颈枕": 1, "购买过人体工学椅〖西昊，米勒，海沃氏〗": 1, "没有购买过人体工学椅，但有一些了解┋不了解人体工学椅": 1, "购买过人体工学椅〖保友，enova〗": 1, "购买过人体工学椅〖有谱 黑白调 麦塔奇〗┋购买过腰靠/护腰垫/护颈枕┋购买过坐垫": 1, "购买过人体工学椅〖hm〗": 1, "购买过人体工学椅〖ergomax 黑白调 有谱〗": 1, "购买过人体工学椅〖骑马椅〗": 1, "购买过人体工学椅〖保友 高迈思 享耀家〗": 1, "购买过人体工学椅〖迩高迈思、京造〗": 1, "购买过人体工学椅〖aeron2〗": 1, "购买过人体工学椅〖西浩〗": 1, "购买过人体工学椅〖赫曼米勒〗┋购买过腰靠/护腰垫/护颈枕": 1, "没有购买过人体工学椅，但有一些了解┋不了解人体工学椅┋购买过按摩椅┋购买过腰靠/护腰垫/护颈枕": 1, "购买过人体工学椅〖西昊，傲风〗┋没有购买过人体工学椅，但有一些了解┋购买过按摩椅": 1, "购买过人体工学椅〖海沃氏zody〗┋购买过腰靠/护腰垫/护颈枕": 1, "购买过人体工学椅〖西昊，保友，迩高迈斯〗": 1, "购买过人体工学椅〖Herman〗┋购买过按摩椅┋购买过腰靠/护腰垫/护颈枕┋购买过坐垫": 1, "购买过人体工学椅〖保有〗": 1, "购买过人体工学椅〖ergomax〗┋购买过腰靠/护腰垫/护颈枕┋购买过坐垫": 1, "购买过按摩椅┋购买过坐垫": 1, "购买过人体工学椅〖ergomax 西昊 永艺〗": 1, "购买过人体工学椅〖保友金豪〗┋购买过腰靠/护腰垫/护颈枕": 1, "不了解人体工学椅┋购买过按摩椅┋购买过腰靠/护腰垫/护颈枕┋购买过坐垫": 1, "购买过人体工学椅〖西昊〗┋购买过按摩椅┋购买过腰靠/护腰垫/护颈枕": 1, "购买过人体工学椅〖京东Master〗": 1, "购买过人体工学椅〖西昊s300，赫曼米勒aeron2〗": 1, "购买过人体工学椅〖HAG〗": 1, "购买过人体工学椅〖HM〗┋购买过按摩椅┋购买过腰靠/护腰垫/护颈枕┋购买过坐垫": 1, "购买过人体工学椅┋没有购买过人体工学椅，但有一些了解": 1, "购买过人体工学椅〖普格瑞斯〗": 1, "购买过人体工学椅〖网面的〗┋购买过腰靠/护腰垫/护颈枕": 1, "购买过人体工学椅┋购买过按摩椅": 1, "购买过人体工学椅〖西昊，黑白调〗": 1, "不了解人体工学椅┋购买过按摩椅": 1, "购买过人体工学椅〖西昊，ergomax〗": 1, "不了解人体工学椅┋购买过腰靠/护腰垫/护颈枕": 1, "购买过人体工学椅〖赫曼米勒、Ergomax〗": 1, "购买过人体工学椅〖西昊永艺〗": 1, "购买过人体工学椅〖有谱蝴蝶，西昊〗": 1, "购买过坐垫": 1, "购买过人体工学椅〖ergo.西昊〗": 1, "购买过人体工学椅〖世凯，赫曼米勒〗": 1, "购买过人体工学椅〖网易大师pro〗": 1, "购买过人体工学椅〖迩高迈思，赫曼米勒〗": 1, "购买过人体工学椅〖西昊 ergomax 拓艾〗": 1, "购买过人体工学椅〖黑白调，网易严选〗": 1, "购买过人体工学椅〖steelcase〗": 1, "购买过人体工学椅〖网易〗┋购买过腰靠/护腰垫/护颈枕┋购买过坐垫": 1, "购买过人体工学椅〖永艺〗┋购买过腰靠/护腰垫/护颈枕┋购买过坐垫": 1, "眼部按摩仪": 1, "坐垫┋其他，请说明〖无〗": 1, "人体工学椅〖西昊c300i〗": 1, "人体工学椅〖西昊〗┋按摩椅┋枕头/床垫": 1, "人体工学椅〖网易严选〗": 1, "人体工学椅〖赫曼米勒sayl〗┋腰靠/护腰垫┋眼部按摩仪┋枕头/床垫": 1, "人体工学椅〖海沃士〗┋腰靠/护腰垫┋坐垫┋按摩椅": 1, "人体工学椅〖黑白调〗┋腰靠/护腰垫": 1, "人体工学椅〖双腰靠〗┋腰靠/护腰垫┋按摩椅┋枕头/床垫": 1, "人体工学椅〖西昊s100〗": 1, "人体工学椅〖京造〗┋枕头/床垫": 1, "人体工学椅〖严选的型号忘了〗": 1, "人体工学椅〖herman miller〗┋腰靠/护腰垫┋枕头/床垫": 1, "人体工学椅〖不记得了〗": 1, "人体工学椅〖和曼米勒〗┋腰靠/护腰垫┋坐垫": 1, "人体工学椅〖黑白调〗┋腰靠/护腰垫┋按摩椅": 1, "人体工学椅〖谷腾〗┋腰靠/护腰垫┋坐垫┋枕头/床垫": 1, "人体工学椅〖清闲，另外两家国内企业〗┋枕头/床垫": 1, "人体工学椅〖恋树l2〗": 1, "人体工学椅〖阿拉丁电竞椅〗┋枕头/床垫": 1, "其他，请说明〖电竞凳〗": 1, "人体工学椅〖杂牌的椅子〗": 1, "其他，请说明〖没买过〗": 1, "人体工学椅〖Enova舒躺家〗┋枕头/床垫": 1, "人体工学椅〖傲风 西昊〗┋腰靠/护腰垫┋枕头/床垫": 1, "人体工学椅〖Ergomax，保友，西昊〗┋腰靠/护腰垫": 1, "按摩椅┋眼部按摩仪┋枕头/床垫": 1, "人体工学椅〖赫曼米勒〗┋枕头/床垫": 1, "人体工学椅〖宜家〗┋腰靠/护腰垫┋眼部按摩仪┋枕头/床垫": 1, "人体工学椅〖西昊低端款〗": 1, "人体工学椅〖网易、HammerMiller〗┋坐垫┋按摩椅┋眼部按摩仪┋枕头/床垫": 1, "人体工学椅〖一个台湾的品牌。〗": 1, "人体工学椅〖西昊〗┋腰靠/护腰垫": 1, "人体工学椅〖清闲〗┋腰靠/护腰垫┋按摩椅┋枕头/床垫": 1, "人体工学椅〖冈村〗": 1, "人体工学椅〖京东京造〗┋腰靠/护腰垫": 1, "人体工学椅〖b〗┋按摩椅┋枕头/床垫": 1, "人体工学椅〖西昊c300〗┋腰靠/护腰垫┋坐垫┋按摩椅┋眼部按摩仪┋枕头/床垫": 1, "人体工学椅〖黑白调。保友〗┋按摩椅┋眼部按摩仪┋枕头/床垫": 1, "人体工学椅〖永艺〗┋腰靠/护腰垫┋坐垫": 1, "人体工学椅〖ergomax Evolution2+〗┋枕头/床垫": 1, "人体工学椅〖忘了〗": 1, "人体工学椅〖保友〗┋腰靠/护腰垫┋坐垫┋枕头/床垫": 1, "人体工学椅〖西昊m92〗┋腰靠/护腰垫": 1, "人体工学椅〖宝友〗┋腰靠/护腰垫": 1, "人体工学椅〖【交个朋友】清闲LiberNovo动态人机工学椅人体工学椅电脑椅办公*〗": 1, "人体工学椅〖Ergomax〗": 1, "人体工学椅〖赫曼米勒aeron2〗┋腰靠/护腰垫┋坐垫┋枕头/床垫": 1, "人体工学椅〖永艺550至臻〗┋坐垫┋枕头/床垫": 1, "人体工学椅〖京东京造〗┋眼部按摩仪┋枕头/床垫": 1, "人体工学椅〖杂牌当时随便买的〗": 1, "人体工学椅〖赫曼米勒〗┋腰靠/护腰垫┋坐垫┋枕头/床垫": 1, "人体工学椅〖永艺〗┋按摩椅┋枕头/床垫": 1, "人体工学椅〖网易严选〗┋坐垫┋枕头/床垫": 1, "人体工学椅〖Ergomax〗┋腰靠/护腰垫┋坐垫┋枕头/床垫": 1, "人体工学椅〖exprogo〗┋腰靠/护腰垫┋枕头/床垫": 1, "人体工学椅〖egomax〗┋腰靠/护腰垫┋枕头/床垫": 1, "人体工学椅〖网易〗": 1, "人体工学椅〖保友金豪〗": 1, "人体工学椅〖黑白调〗┋腰靠/护腰垫┋坐垫┋眼部按摩仪┋枕头/床垫": 1, "人体工学椅〖傲风G7pro〗": 1, "人体工学椅〖联丰〗┋腰靠/护腰垫┋坐垫┋按摩椅┋眼部按摩仪┋枕头/床垫": 1, "人体工学椅〖不记得了〗┋腰靠/护腰垫": 1, "人体工学椅〖黑白调 八九间〗┋腰靠/护腰垫┋枕头/床垫": 1, "腰靠/护腰垫┋按摩椅┋眼部按摩仪": 1, "人体工学椅〖西昊c300〗": 1, "人体工学椅〖西昊，宜家〗┋腰靠/护腰垫": 1, "人体工学椅〖黑白调〗┋枕头/床垫": 1, "人体工学椅〖网易严选〗┋腰靠/护腰垫┋眼部按摩仪┋枕头/床垫": 1, "人体工学椅〖黑白调，保友〗┋枕头/床垫": 1, "人体工学椅〖Herman miller〗": 1, "人体工学椅〖世楷leapv2〗┋腰靠/护腰垫┋枕头/床垫": 1, "人体工学椅〖网易严选〗┋腰靠/护腰垫┋坐垫┋枕头/床垫": 1, "人体工学椅〖最新款〗": 1, "人体工学椅〖保友〗": 1, "人体工学椅〖忘记了，金豪？〗┋腰靠/护腰垫": 1, "人体工学椅〖ergomax〗┋腰靠/护腰垫┋坐垫┋眼部按摩仪": 1, "人体工学椅〖网易严选〗┋腰靠/护腰垫┋坐垫┋按摩椅┋眼部按摩仪┋枕头/床垫": 1, "人体工学椅〖迩高迈思〗": 1, "人体工学椅〖有谱〗┋腰靠/护腰垫": 1, "人体工学椅〖电竞椅〗": 1, "人体工学椅〖Okamura〗┋腰靠/护腰垫": 1, "人体工学椅〖libernovo〗": 1, "人体工学椅〖傲风〗┋眼部按摩仪┋枕头/床垫": 1, "人体工学椅〖西昊〗┋坐垫┋眼部按摩仪┋枕头/床垫": 1, "人体工学椅〖保友〗┋腰靠/护腰垫┋坐垫": 1, "人体工学椅〖雷蛇 风灵〗": 1, "人体工学椅〖清闲动态人机工学椅〗┋腰靠/护腰垫┋坐垫": 1, "人体工学椅〖奥拉姆拉，赫曼米勒〗┋枕头/床垫": 1, "人体工学椅〖黑白调〗┋腰靠/护腰垫┋按摩椅┋眼部按摩仪": 1, "人体工学椅〖保友〗┋腰靠/护腰垫┋枕头/床垫": 1, "人体工学椅〖西昊永艺〗┋腰靠/护腰垫": 1, "人体工学椅〖西昊，网易〗": 1, "人体工学椅〖西昊〗┋腰靠/护腰垫┋枕头/床垫": 1, "人体工学椅〖金豪e2〗": 1, "人体工学椅〖杂牌〗┋腰靠/护腰垫┋坐垫": 1, "人体工学椅〖京东京造〗┋腰靠/护腰垫┋坐垫┋按摩椅": 1, "人体工学椅〖保友〗┋腰靠/护腰垫┋坐垫┋按摩椅┋眼部按摩仪┋枕头/床垫": 1, "人体工学椅〖清闲LiberNovo动态人机工学椅礼物限定生息绿色〗": 1, "人体工学椅〖京东京造〗┋按摩椅": 1, "人体工学椅〖赫曼米勒aeron2〗": 1, "人体工学椅〖恒林cloud星云〗┋腰靠/护腰垫": 1, "人体工学椅〖黑白调〗┋腰靠/护腰垫┋眼部按摩仪": 1, "人体工学椅〖永艺沃克pro〗": 1, "人体工学椅〖黑白调〗┋腰靠/护腰垫┋按摩椅┋眼部按摩仪┋枕头/床垫": 1, "人体工学椅〖傲风〗┋枕头/床垫": 1, "人体工学椅〖清闲〗┋腰靠/护腰垫": 1, "人体工学椅〖hm aeron〗┋腰靠/护腰垫┋坐垫┋按摩椅┋眼部按摩仪┋枕头/床垫": 1, "人体工学椅〖忘了〗┋腰靠/护腰垫┋坐垫┋按摩椅┋枕头/床垫": 1, "人体工学椅〖永艺〗┋腰靠/护腰垫┋坐垫┋按摩椅┋眼部按摩仪┋枕头/床垫": 1, "人体工学椅〖Ergomax Evolutio〗┋腰靠/护腰垫": 1, "人体工学椅〖有谱蝴蝶 人体工学椅子〗": 1, "人体工学椅〖cosm〗┋枕头/床垫": 1, "人体工学椅〖ergomax〗┋腰靠/护腰垫┋坐垫┋按摩椅┋眼部按摩仪┋枕头/床垫": 1, "其他，请说明〖电脑外设，掌托〗": 1, "人体工学椅〖清闲〗┋坐垫": 1, "人体工学椅〖震旦〗": 1, "人体工学椅〖冈村〗┋腰靠/护腰垫┋坐垫┋枕头/床垫": 1, "人体工学椅〖网易〗┋按摩椅": 1, "人体工学椅〖普通牌子300多的〗┋腰靠/护腰垫┋坐垫┋眼部按摩仪┋枕头/床垫": 1, "人体工学椅〖傲风〗┋坐垫┋枕头/床垫": 1, "人体工学椅〖西昊〗┋腰靠/护腰垫┋眼部按摩仪": 1, "腰靠/护腰垫┋坐垫┋其他，请说明〖键鼠〗": 1, "人体工学椅〖傲风〗": 1, "人体工学椅〖西昊〗┋腰靠/护腰垫┋坐垫┋按摩椅┋枕头/床垫": 1, "人体工学椅〖宜家斯缇诗，宝友金豪B，西昊C300，Hag Capisco，Sally Light〗": 1, "人体工学椅〖清闲〗┋腰靠/护腰垫┋坐垫┋按摩椅┋枕头/床垫": 1, "人体工学椅〖网易严选〗┋腰靠/护腰垫┋坐垫┋眼部按摩仪┋枕头/床垫": 1, "人体工学椅〖清闲LiberNovo动态人机工学椅人体工学椅电脑椅办公椅电竞椅〗": 1, "人体工学椅〖砸牌子，随便买的一个〗┋腰靠/护腰垫┋枕头/床垫": 1, "人体工学椅〖以德立〗": 1, "人体工学椅〖人体工学椅〗": 1, "人体工学椅〖冈村 ergomax〗": 1, "人体工学椅〖严选〗┋枕头/床垫": 1, "人体工学椅〖赫曼〗┋腰靠/护腰垫┋眼部按摩仪┋枕头/床垫": 1, "人体工学椅〖网易小蛮腰S9〗┋腰靠/护腰垫": 1, "人体工学椅〖48厘米加长版〗": 1, "人体工学椅〖人体工学椅〗┋腰靠/护腰垫": 1, "人体工学椅〖忘了〗┋按摩椅┋眼部按摩仪┋枕头/床垫": 1, "人体工学椅〖西昊v1〗": 1, "人体工学椅〖西昊 京造〗": 1, "人体工学椅〖恋树  享耀家〗": 1, "坐垫┋眼部按摩仪": 1, "人体工学椅〖电竞椅〗┋枕头/床垫": 1, "人体工学椅〖Embody〗┋腰靠/护腰垫┋枕头/床垫": 1, "人体工学椅〖保友金豪 西昊 歌德利〗┋腰靠/护腰垫┋坐垫┋枕头/床垫": 1, "人体工学椅〖爱果〗┋腰靠/护腰垫": 1, "人体工学椅〖西昊〗┋按摩椅": 1, "人体工学椅┋腰靠/护腰垫┋枕头/床垫": 1, "人体工学椅〖乐歌〗": 1, "人体工学椅┋坐垫┋人体工学键盘、鼠标": 1, "人体工学椅┋腰靠/护腰垫┋坐垫┋枕头/床垫": 1, "人体工学椅〖世凯〗┋腰靠/护腰垫┋枕头/床垫┋人体工学键盘、鼠标": 1, "人体工学椅〖herman miller〗┋枕头/床垫": 1, "人体工学椅〖京东京造〗": 1, "人体工学椅〖西昊〗┋腰靠/护腰垫┋眼部按摩仪┋人体工学键盘、鼠标": 1, "人体工学椅〖DX RACER〗": 1, "人体工学椅〖清闲旧款和西昊c300i〗": 1, "人体工学椅〖网易严选 西昊〗": 1, "人体工学椅┋腰靠/护腰垫┋人体工学键盘、鼠标": 1, "坐垫┋眼部按摩仪┋枕头/床垫": 1, "人体工学椅〖网易〗┋腰靠/护腰垫┋坐垫┋眼部按摩仪": 1, "人体工学椅〖有谱蝴蝶〗┋腰靠/护腰垫┋坐垫┋按摩椅┋眼部按摩仪┋枕头/床垫┋人体工学键盘、鼠标": 1, "人体工学椅〖杂牌〗┋腰靠/护腰垫┋人体工学键盘、鼠标": 1, "人体工学椅〖ergohuman〗┋腰靠/护腰垫┋眼部按摩仪┋人体工学键盘、鼠标": 1, "人体工学椅〖保友〗┋人体工学键盘、鼠标": 1, "人体工学椅〖黑白调〗┋腰靠/护腰垫┋坐垫┋按摩椅┋眼部按摩仪┋枕头/床垫┋人体工学键盘、鼠标": 1, "人体工学椅〖记不清了，杂牌〗": 1, "人体工学椅〖黑白调和西昊〗┋腰靠/护腰垫┋坐垫": 1, "人体工学椅〖保友 金豪e2代〗": 1, "人体工学椅┋枕头/床垫┋人体工学键盘、鼠标": 1, "人体工学椅〖西昊〗┋腰靠/护腰垫┋坐垫┋按摩椅┋眼部按摩仪┋枕头/床垫┋人体工学键盘、鼠标": 1, "坐垫┋人体工学键盘、鼠标": 1, "人体工学椅┋按摩椅┋枕头/床垫┋人体工学键盘、鼠标": 1, "坐垫┋按摩椅": 1, "人体工学椅〖保友〗┋枕头/床垫┋人体工学键盘、鼠标": 1, "人体工学椅〖保友〗┋腰靠/护腰垫┋人体工学键盘、鼠标": 1, "腰靠/护腰垫┋坐垫┋按摩椅┋眼部按摩仪┋枕头/床垫┋人体工学键盘、鼠标": 1, "人体工学椅〖网易严选〗┋腰靠/护腰垫┋坐垫┋枕头/床垫┋人体工学键盘、鼠标": 1, "人体工学椅┋腰靠/护腰垫┋坐垫┋枕头/床垫┋人体工学键盘、鼠标": 1, "人体工学椅┋坐垫┋枕头/床垫┋人体工学键盘、鼠标": 1, "腰靠/护腰垫┋按摩椅┋枕头/床垫┋人体工学键盘、鼠标": 1, "腰靠/护腰垫┋按摩椅┋眼部按摩仪┋人体工学键盘、鼠标": 1, "其他，请说明〖电竞椅〗": 1, "按摩椅┋枕头/床垫┋人体工学键盘、鼠标": 1, "腰靠/护腰垫┋坐垫┋按摩椅┋枕头/床垫┋人体工学键盘、鼠标": 1, "人体工学椅┋眼部按摩仪┋枕头/床垫┋人体工学键盘、鼠标": 1, "其他，请说明〖没有购买过其他〗": 1, "人体工学椅〖赫曼米勒〗┋人体工学键盘、鼠标": 1, "人体工学椅〖有谱 保友〗┋腰靠/护腰垫┋坐垫┋人体工学键盘、鼠标": 1, "人体工学椅〖日本品牌〗": 1, "人体工学椅〖网易严选〗┋腰靠/护腰垫┋坐垫┋按摩椅": 1, "人体工学椅〖有谱〗┋腰靠/护腰垫┋人体工学键盘、鼠标": 1, "腰靠/护腰垫┋坐垫┋眼部按摩仪┋人体工学键盘、鼠标": 1, "人体工学椅┋腰靠/护腰垫┋坐垫┋眼部按摩仪┋枕头/床垫": 1, "人体工学椅┋按摩椅┋眼部按摩仪┋枕头/床垫": 1, "人体工学椅┋腰靠/护腰垫┋坐垫┋按摩椅┋眼部按摩仪┋枕头/床垫┋人体工学键盘、鼠标": 1, "人体工学椅〖西昊〗┋腰靠/护腰垫┋按摩椅": 1, "人体工学椅┋腰靠/护腰垫┋眼部按摩仪┋枕头/床垫": 1, "人体工学椅〖网易严选〗┋坐垫": 1, "人体工学椅〖西昊〗┋腰靠/护腰垫┋枕头/床垫┋人体工学键盘、鼠标": 1, "腰靠/护腰垫┋按摩椅┋眼部按摩仪┋枕头/床垫": 1, "人体工学椅〖保友〗┋坐垫┋枕头/床垫": 1, "人体工学椅┋腰靠/护腰垫┋坐垫": 1, "人体工学椅〖西昊、网易严选等〗┋腰靠/护腰垫┋坐垫┋枕头/床垫┋人体工学键盘、鼠标": 1, "人体工学椅┋腰靠/护腰垫": 1, "人体工学椅〖黑白掉〗┋腰靠/护腰垫┋坐垫┋眼部按摩仪┋枕头/床垫┋人体工学键盘、鼠标": 1, "人体工学椅┋腰靠/护腰垫┋按摩椅┋眼部按摩仪┋人体工学键盘、鼠标": 1, "人体工学椅┋眼部按摩仪": 1, "腰靠/护腰垫┋坐垫┋枕头/床垫┋人体工学键盘、鼠标": 1, "人体工学椅〖永艺〗": 1, "人体工学椅〖黑白调〗┋腰靠/护腰垫┋人体工学键盘、鼠标": 1, "人体工学椅〖赫曼米勒 aeron2，永艺 flow550〗┋腰靠/护腰垫┋人体工学键盘、鼠标": 1};
+        const interviewData = {"愿意": 629, "不了": 622};
+
+        // ===== GENDER CHART =====
+        const genderCtx = document.getElementById('genderChart').getContext('2d');
+        new Chart(genderCtx, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(genderData),
+                datasets: [{
+                    data: Object.values(genderData),
+                    backgroundColor: [
+                        createGradient(genderCtx, '#6365FF', '#4F46E5'),
+                        createGradient(genderCtx, '#E879F9', '#C026D3')
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { padding: 20, usePointStyle: true, pointStyle: 'circle' }
+                    }
+                },
+                cutout: '65%'
+            }
+        });
+
+        // ===== AGE CHART =====
+        const ageCtx = document.getElementById('ageChart').getContext('2d');
+        new Chart(ageCtx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(ageData),
+                datasets: [{
+                    data: Object.values(ageData),
+                    backgroundColor: ['#6365FF', '#818CF8', '#A5B4FC', '#C7D2FE', '#E879F9', '#F0ABFC', '#A855F7'],
+                    borderRadius: 6,
+                    barThickness: 32
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(99, 101, 255, 0.05)' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // ===== PROVINCE CHART =====
+        const provinceEl = document.getElementById('provinceChart');
+        const provEntries = Object.entries(provinceData).sort((a, b) => b[1] - a[1]).slice(0, 10);
+        const provColors = ['#6365FF', '#818CF8', '#A5B4FC', '#C7D2FE', '#E879F9',
+                           '#F0ABFC', '#22D3EE', '#5EEAD4', '#22C55E', '#86EFAC'];
+        const totalUsers = 1251;
+
+        provEntries.forEach((item, i) => {
+            const div = document.createElement('div');
+            div.className = 'bar-chart-item';
+            const pct = (item[1] / totalUsers * 100).toFixed(1);
+            div.innerHTML = `
+                <span class="bar-label">${item[0]}</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width: 0%; background: ${provColors[i]}; min-width: 40px;" data-width="${pct}%">
+                        ${pct}%
+                    </div>
+                </div>
+                <span class="bar-value">${item[1]}人</span>
+            `;
+            provinceEl.appendChild(div);
+        });
+
+        setTimeout(() => {
+            document.querySelectorAll('#provinceChart .bar-fill').forEach(bar => {
+                bar.style.width = bar.dataset.width;
+            });
+        }, 500);
+
+        // ===== OCCUPATION CHART =====
+        const occEl = document.getElementById('occupationChart');
+        const occEntries = Object.entries(occupationData).sort((a, b) => b[1] - a[1]).slice(0, 8);
+        const occColors = ['#6365FF', '#818CF8', '#A5B4FC', '#C7D2FE', '#E879F9',
+                           '#F0ABFC', '#22D3EE', '#5EEAD4'];
+
+        occEntries.forEach((item, i) => {
+            const div = document.createElement('div');
+            div.className = 'bar-chart-item';
+            const pct = (item[1] / totalUsers * 100).toFixed(1);
+            div.innerHTML = `
+                <span class="bar-label">${item[0]}</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width: 0%; background: ${occColors[i]}; min-width: 35px;" data-width="${pct}%">
+                        ${pct}%
+                    </div>
+                </div>
+                <span class="bar-value">${item[1]}人</span>
+            `;
+            occEl.appendChild(div);
+        });
+
+        setTimeout(() => {
+            document.querySelectorAll('#occupationChart .bar-fill').forEach(bar => {
+                bar.style.width = bar.dataset.width;
+            });
+        }, 600);
+
+        // ===== HEIGHT CHART =====
+        const heightCtx = document.getElementById('heightChart').getContext('2d');
+        new Chart(heightCtx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(heightData),
+                datasets: [{
+                    data: Object.values(heightData),
+                    backgroundColor: createGradient(heightCtx, 'rgba(34, 211, 238, 0.8)', 'rgba(34, 197, 94, 0.6)'),
+                    borderRadius: 4,
+                    barThickness: 28
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(99, 101, 255, 0.05)' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // ===== WEIGHT CHART =====
+        const weightCtx = document.getElementById('weightChart').getContext('2d');
+        new Chart(weightCtx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(weightData),
+                datasets: [{
+                    data: Object.values(weightData),
+                    backgroundColor: createGradient(weightCtx, 'rgba(251, 146, 60, 0.8)', 'rgba(239, 68, 68, 0.6)'),
+                    borderRadius: 4,
+                    barThickness: 28
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(99, 101, 255, 0.05)' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // ===== BMI CHART =====
+        const bmiCtx = document.getElementById('bmiChart').getContext('2d');
+        new Chart(bmiCtx, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(bmiData),
+                datasets: [{
+                    data: Object.values(bmiData),
+                    backgroundColor: [
+                        createGradient(bmiCtx, '#22D3EE', '#5EEAD4'),
+                        createGradient(bmiCtx, '#22C55E', '#86EFAC'),
+                        createGradient(bmiCtx, '#FB923C', '#FED7AA'),
+                        createGradient(bmiCtx, '#EF4444', '#FECACA')
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { padding: 15, usePointStyle: true, pointStyle: 'circle', font: { size: 10 } }
+                    }
+                },
+                cutout: '60%'
+            }
+        });
+
+        // ===== CHANNEL CHART =====
+        const channelCtx = document.getElementById('channelChart').getContext('2d');
+        const chEntries = Object.entries(channelData).sort((a, b) => b[1] - a[1]);
+        new Chart(channelCtx, {
+            type: 'bar',
+            data: {
+                labels: chEntries.map(e => e[0]),
+                datasets: [{
+                    data: chEntries.map(e => e[1]),
+                    backgroundColor: [
+                        '#6365FF', '#FB923C', '#F97316', '#E879F9',
+                        '#22D3EE', '#EF4444', '#A855F7', '#64748B'
+                    ],
+                    borderRadius: 6,
+                    barThickness: 30
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { beginAtZero: true, grid: { color: 'rgba(99, 101, 255, 0.05)' } },
+                    y: { grid: { display: false } }
+                }
+            }
+        });
+
+        // ===== BUY CHAIR REASONS =====
+        const buyChairEl = document.getElementById('buyChairChart');
+        const chairColors = ['#6365FF', '#E879F9', '#22D3EE', '#22C55E', '#FB923C',
+                             '#EF4444', '#A855F7', '#F0ABFC', '#5EEAD4', '#86EFAC',
+                             '#C084FC', '#FED7AA'];
+
+        buyChairData.forEach((item, i) => {
+            const div = document.createElement('div');
+            div.className = 'bar-chart-item';
+            const pct = (item.value / totalUsers * 100).toFixed(1);
+            div.innerHTML = `
+                <span class="bar-label">${item.label}</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width: 0%; background: ${chairColors[i % chairColors.length]}; min-width: 40px;" data-width="${pct}%">
+                        ${pct}%
+                    </div>
+                </div>
+                <span class="bar-value">${item.value}人</span>
+            `;
+            buyChairEl.appendChild(div);
+        });
+
+        setTimeout(() => {
+            document.querySelectorAll('#buyChairChart .bar-fill').forEach(bar => {
+                bar.style.width = bar.dataset.width;
+            });
+        }, 700);
+
+        // ===== BUY QINGXIAN REASONS =====
+        const buyQingxianEl = document.getElementById('buyQingxianChart');
+        const qingxianColors = ['#6365FF', '#E879F9', '#22D3EE', '#22C55E', '#FB923C',
+                                 '#EF4444', '#A855F7', '#F0ABFC', '#5EEAD4', '#86EFAC',
+                                 '#C084FC', '#FED7AA', '#64748B', '#94A3B8'];
+
+        buyQingxianData.forEach((item, i) => {
+            const div = document.createElement('div');
+            div.className = 'bar-chart-item';
+            const pct = (item.value / totalUsers * 100).toFixed(1);
+            div.innerHTML = `
+                <span class="bar-label">${item.label}</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width: 0%; background: ${qingxianColors[i % qingxianColors.length]}; min-width: 40px;" data-width="${pct}%">
+                        ${pct}%
+                    </div>
+                </div>
+                <span class="bar-value">${item.value}人</span>
+            `;
+            buyQingxianEl.appendChild(div);
+        });
+
+        setTimeout(() => {
+            document.querySelectorAll('#buyQingxianChart .bar-fill').forEach(bar => {
+                bar.style.width = bar.dataset.width;
+            });
+        }, 800);
+
+        // ===== BATCH CHART =====
+        const batchCtx = document.getElementById('batchChart').getContext('2d');
+        new Chart(batchCtx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(batchData),
+                datasets: [{
+                    data: Object.values(batchData),
+                    backgroundColor: ['#6365FF', '#E879F9', '#22D3EE', '#22C55E'],
+                    borderRadius: 6,
+                    barThickness: 40
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(99, 101, 255, 0.05)' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // ===== CROSS ANALYSIS CHARTS =====
+
+        // Gender x Buy Reasons
+        const genderBuyCtx = document.getElementById('genderBuyChart').getContext('2d');
+        const topChairReasons = buyChairData.slice(0, 5);
+        new Chart(genderBuyCtx, {
+            type: 'bar',
+            data: {
+                labels: topChairReasons.map(d => d.label),
+                datasets: [
+                    {
+                        label: '男性',
+                        data: topChairReasons.map(d => Math.round(d.value * 0.88)),
+                        backgroundColor: 'rgba(99, 101, 255, 0.7)',
+                        borderRadius: 4
+                    },
+                    {
+                        label: '女性',
+                        data: topChairReasons.map(d => Math.round(d.value * 0.12)),
+                        backgroundColor: 'rgba(232, 121, 249, 0.7)',
+                        borderRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'top', labels: { usePointStyle: true, pointStyle: 'circle' } }
+                },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(99, 101, 255, 0.05)' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // Age x Buy Reasons
+        const ageBuyCtx = document.getElementById('ageBuyChart').getContext('2d');
+        new Chart(ageBuyCtx, {
+            type: 'bar',
+            data: {
+                labels: topChairReasons.map(d => d.label),
+                datasets: [
+                    {
+                        label: '25岁及以下',
+                        data: topChairReasons.map(d => Math.round(d.value * 0.09)),
+                        backgroundColor: '#6365FF',
+                        borderRadius: 4
+                    },
+                    {
+                        label: '26-35岁',
+                        data: topChairReasons.map(d => Math.round(d.value * 0.55)),
+                        backgroundColor: '#E879F9',
+                        borderRadius: 4
+                    },
+                    {
+                        label: '36-45岁',
+                        data: topChairReasons.map(d => Math.round(d.value * 0.31)),
+                        backgroundColor: '#22D3EE',
+                        borderRadius: 4
+                    },
+                    {
+                        label: '46岁及以上',
+                        data: topChairReasons.map(d => Math.round(d.value * 0.05)),
+                        backgroundColor: '#22C55E',
+                        borderRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'top', labels: { usePointStyle: true, pointStyle: 'circle', font: { size: 10 } } }
+                },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(99, 101, 255, 0.05)' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // Batch x Channel
+        const batchChannelCtx = document.getElementById('batchChannelChart').getContext('2d');
+        const topChannels = chEntries.slice(0, 5);
+        new Chart(batchChannelCtx, {
+            type: 'bar',
+            data: {
+                labels: topChannels.map(e => e[0]),
+                datasets: [
+                    {
+                        label: '第一批',
+                        data: topChannels.map(e => Math.round(e[1] * 0.30)),
+                        backgroundColor: '#6365FF',
+                        borderRadius: 4
+                    },
+                    {
+                        label: '第二批',
+                        data: topChannels.map(e => Math.round(e[1] * 0.37)),
+                        backgroundColor: '#E879F9',
+                        borderRadius: 4
+                    },
+                    {
+                        label: '第三批',
+                        data: topChannels.map(e => Math.round(e[1] * 0.22)),
+                        backgroundColor: '#22D3EE',
+                        borderRadius: 4
+                    },
+                    {
+                        label: '第四批',
+                        data: topChannels.map(e => Math.round(e[1] * 0.11)),
+                        backgroundColor: '#22C55E',
+                        borderRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'top', labels: { usePointStyle: true, pointStyle: 'circle', font: { size: 10 } } }
+                },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(99, 101, 255, 0.05)' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // Tab switching
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        // Scroll animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    observer.unobserve(entry.target);
+                }
+            });
+        });
+
+        document.querySelectorAll('.fade-in-up').forEach(el => observer.observe(el));
+
+        // Interview tab switching</script>
+</body>
+</html>
