@@ -1,0 +1,2210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>用户访谈记录 - 清闲工学椅调研</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+    --bg: #0A0E1A;
+    --card-bg: rgba(15, 18, 35, 0.7);
+    --primary: #6365FF;
+    --secondary: #E879F9;
+    --tertiary: #22D3EE;
+    --success: #22C55E;
+    --text: #E2E8F0;
+    --text-dim: #94A3B8;
+    --text-muted: #64748B;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+}
+.bg-grid {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background-image:
+        linear-gradient(rgba(99, 101, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(99, 101, 255, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    z-index: 0;
+    animation: gridMove 20s linear infinite;
+}
+@keyframes gridMove {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(40px, 40px); }
+}
+.container {
+    position: relative; z-index: 10;
+    max-width: 1200px; margin: 0 auto; padding: 2rem;
+}
+.header {
+    text-align: center; margin-bottom: 2rem;
+}
+.header h1 {
+    font-size: 2rem; font-weight: 700;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+}
+.header p { color: var(--text-dim); font-size: 0.9rem; }
+.back-link {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    color: var(--text-dim); text-decoration: none;
+    font-size: 0.875rem; margin-bottom: 1.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--card-bg);
+    border: 1px solid rgba(99, 101, 255, 0.15);
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+.back-link:hover {
+    border-color: var(--primary); color: var(--text);
+}
+.tab-nav {
+    display: flex; gap: 0.5rem; margin-bottom: 1.5rem;
+    justify-content: center; flex-wrap: wrap;
+}
+.tab-btn {
+    padding: 0.5rem 1.25rem;
+    border-radius: 8px;
+    font-size: 0.875rem; font-weight: 500;
+    cursor: pointer; transition: all 0.2s;
+    border: 1px solid rgba(99, 101, 255, 0.15);
+    background: var(--card-bg);
+    color: var(--text-dim);
+}
+.tab-btn.active {
+    background: rgba(99, 101, 255, 0.2);
+    border-color: var(--primary);
+    color: #A5B4FC;
+}
+.tab-btn:hover:not(.active) { color: var(--text); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+.interviews-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 1.25rem;
+}
+.interview-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(99, 101, 255, 0.15);
+    border-radius: 12px;
+    padding: 1.25rem;
+    transition: all 0.3s ease;
+}
+.interview-card:hover {
+    border-color: rgba(99, 101, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+.interview-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 1rem; padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.interview-badge {
+    font-size: 0.875rem; font-weight: 700;
+    padding: 4px 12px; border-radius: 9999px;
+}
+.interview-badge.girl {
+    background: linear-gradient(135deg, rgba(99, 101, 255, 0.3), rgba(232, 121, 249, 0.2));
+    color: #C7D2FE;
+}
+.interview-badge.green {
+    background: rgba(34, 197, 94, 0.2);
+    color: #86EFAC;
+}
+.interview-role { font-size: 0.75rem; color: var(--text-dim); max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.interview-meta {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 0.4rem; margin-bottom: 1rem;
+}
+.meta-item {
+    display: flex; flex-direction: column; gap: 0.1rem;
+    min-width: 0;
+}
+.meta-label { font-size: 0.625rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
+.meta-value { font-size: 0.75rem; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.interview-qa { display: flex; flex-direction: column; gap: 0.6rem; max-height: 400px; overflow-y: auto; }
+.interview-qa::-webkit-scrollbar { width: 4px; }
+.interview-qa::-webkit-scrollbar-track { background: transparent; }
+.interview-qa::-webkit-scrollbar-thumb { background: rgba(99,101,255,0.3); border-radius: 2px; }
+.qa-item {
+    background: rgba(99, 101, 255, 0.05);
+    border-radius: 8px; padding: 0.6rem 0.75rem;
+}
+.qa-question {
+    font-size: 0.6875rem; font-weight: 600;
+    color: var(--primary); margin-bottom: 0.25rem;
+}
+.qa-answer {
+    font-size: 0.75rem; color: var(--text-dim);
+    line-height: 1.6; word-break: break-word; white-space: pre-line;
+}
+footer {
+    text-align: center; padding: 2rem;
+    color: var(--text-muted); font-size: 0.75rem;
+}
+@media (max-width: 768px) {
+    .container { padding: 1rem; }
+    .interviews-grid { grid-template-columns: 1fr; }
+    .interview-meta { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="container">
+    <a href="清闲工学椅调研看板.html" class="back-link">← 返回主看板</a>
+    <div class="header">
+        <h1>用户访谈记录</h1>
+        <p>14场深度访谈原始记录 · 女生用户(7场) + 生息绿用户(7场)</p>
+    </div>
+
+    <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab('all')">全部 (14场)</button>
+        <button class="tab-btn" onclick="switchTab('girl')">女生用户 (7场)</button>
+        <button class="tab-btn" onclick="switchTab('green')">生息绿用户 (7场)</button>
+    </div>
+
+    <div id="tab-all" class="tab-content active">
+        <div class="interviews-grid">
+
+        <div class="interview-card">
+            <div class="interview-header">
+                <span class="interview-badge girl">G1</span>
+                <span class="interview-role"></span>
+            </div>
+            <div class="interview-meta">
+                <div class="meta-item"><span class="meta-label">编号</span><span class="meta-value">1</span></div><div class="meta-item"><span class="meta-label">性别</span><span class="meta-value">女</span></div><div class="meta-item"><span class="meta-label">年龄</span><span class="meta-value">31-35</span></div><div class="meta-item"><span class="meta-label">身高体重</span><span class="meta-value">165/53kg</span></div><div class="meta-item"><span class="meta-label">月收入</span><span class="meta-value">30,000-39,999元</span></div><div class="meta-item"><span class="meta-label">访谈时间</span><span class="meta-value">0129-15点-16点</span></div><div class="meta-item"><span class="meta-label">手机号</span><span class="meta-value">15810895706</span></div>
+            </div>
+            <div class="interview-qa">
+                
+                <div class="qa-item">
+                    <div class="qa-question">居住地</div>
+                    <div class="qa-answer">北京-丰台</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">工作内容(AI工具？表格文档？)</div>
+                    <div class="qa-answer">飞书文档处理居多。用ai的话用ds、kimi、豆包、即梦这些比较多</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">椅子放在哪里？（家？办公室？）</div>
+                    <div class="qa-answer">办公室。有升降桌</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">生活/工作节奏如何？用一些词来形容？
+工作强度？是否长期久坐？</div>
+                    <div class="qa-answer">基本早10晚7、8下班，强度还可以，但是上班时间基本都是久坐，每两小时起来一次。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">如果让你回想一个典型的工作日，从早上到晚上不同时间你在做什么？</div>
+                    <div class="qa-answer">早10：00上班-19：00多下班，下班去公司健身房锻炼30-40分钟，做有氧。然后回家做饭，他和对象都会交替坐。21：00多吃完饭。住1楼，会去家门口喂猫、出去逛，或者对象需要摄影给他打下手。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">周末会去干什么？兴趣爱好之类的？</div>
+                    <div class="qa-answer">ENFP；在家、和朋友出去</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">健身习惯？按摩习惯？</div>
+                    <div class="qa-answer">会去健身</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">当时为什么购买OC1？</div>
+                    <div class="qa-answer">【健康】腰突和骶髂发炎，疼的实在受不了想着换个椅子能缓解一些</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">购买前是否对比过其他产品？</div>
+                    <div class="qa-answer">抖音看到-b站做功课</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">OC1有什么不满意的，改进什么？</div>
+                    <div class="qa-answer">粘毛；使用脚踏会提到对面的人。45cm坐垫会有点短，但还行能接受不是大问题。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">OC1主要在什么场景下使用？平均每天用多久？</div>
+                    <div class="qa-answer">办公时间都在用</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">您在家休闲时，通常喜欢做什么？在什么位置进行？（周末和工作日有不同吗？）</div>
+                    <div class="qa-answer">会愿意躺着刷刷手机</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在家休闲时，您更常用哪种设备？（手机/平板/电脑/电视）</div>
+                    <div class="qa-answer">就用手机，偶尔看电视</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">你在放松完全不要工作的时刻会怎么坐？</div>
+                    <div class="qa-answer">躺着-床上</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">标签</div>
+                    <div class="qa-answer">病痛/猫毛/工作不卷</div>
+                </div>
+            </div>
+        </div>
+        <div class="interview-card">
+            <div class="interview-header">
+                <span class="interview-badge girl">G2</span>
+                <span class="interview-role"></span>
+            </div>
+            <div class="interview-meta">
+                <div class="meta-item"><span class="meta-label">编号</span><span class="meta-value">2</span></div><div class="meta-item"><span class="meta-label">性别</span><span class="meta-value">女</span></div><div class="meta-item"><span class="meta-label">年龄</span><span class="meta-value">36</span></div><div class="meta-item"><span class="meta-label">身高体重</span><span class="meta-value">166/54kg</span></div><div class="meta-item"><span class="meta-label">访谈时间</span><span class="meta-value">0129-17点-18点</span></div><div class="meta-item"><span class="meta-label">手机号</span><span class="meta-value">18100733032</span></div>
+            </div>
+            <div class="interview-qa">
+                
+                <div class="qa-item">
+                    <div class="qa-question">居住地</div>
+                    <div class="qa-answer">湖南-长沙</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">工作内容(AI工具？表格文档？)</div>
+                    <div class="qa-answer">国企市场部门，实际从事内勤工作，为跑市场的同事处理内部管理流程等事务</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">椅子放在哪里？（家？办公室？）</div>
+                    <div class="qa-answer">家里-书房/电竞房/功能房</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">生活/工作节奏如何？用一些词来形容？
+工作强度？是否长期久坐？</div>
+                    <div class="qa-answer">工作节奏平稳，国企内勤工作。
+长期久坐玩游戏，工作日玩游戏 2-3 小时，周末可达 7-10 小时</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">如果让你回想一个典型的工作日，从早上到晚上不同时间你在做什么？</div>
+                    <div class="qa-answer">工作日 ：正常到公司上班，下班回家后玩游戏 2-3 小时（非每天。
+注重养生，10 点前躺下休息，保证 8-9 小时睡眠。
+周末 ：以玩游戏为主，累计7-10 小时，穿插休息与躺桩运动</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">周末会去干什么？兴趣爱好之类的？</div>
+                    <div class="qa-answer">玩游戏偏好 Steam 3A 游戏（如《哈迪斯》《博德之门 3》）、种田类游戏（如《星露谷》）及休闲网游（如《无限暖暖》）。
+养娃：收集有IP棉花娃娃（如罗小白），搭配衣服并带出门拍照。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">健身习惯？按摩习惯？</div>
+                    <div class="qa-answer">身体允许时进行躺桩运动</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">当时为什么购买OC1？</div>
+                    <div class="qa-answer">在购置桌子支架的时候看到b站广告</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">购买前是否对比过其他产品？</div>
+                    <div class="qa-answer">搜过女生人体工学椅</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">OC1有什么不满意的，改进什么？</div>
+                    <div class="qa-answer">1）二档到三档下降幅度太大，需增加 1-3 档间调节选项；2)腰支撑对骨盆与腰连接部位支撑不足，每次换挡需调整顶腰。3)脚踏高度 ：现有脚踏 + 增高模块仍不够高</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">OC1主要在什么场景下使用？平均每天用多久？</div>
+                    <div class="qa-answer">玩游戏</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">有没有哪些姿势或场景，是OC1无法满足的？（盘腿？）</div>
+                    <div class="qa-answer">盘腿空间小一点但也能盘。默认坐高导致脚无法踩实泡脚桶</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在家休闲时，您更常用哪种设备？（手机/平板/电脑/电视）</div>
+                    <div class="qa-answer">电脑 ：主要设备，用于玩游戏、看纪录片； 32 寸悬臂支架屏幕 + OC1 椅子</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">你在放松完全不要工作的时刻会怎么坐？</div>
+                    <div class="qa-answer">有好多个地方可以躺</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">标签</div>
+                    <div class="qa-answer">游戏/独身/“厌男小女权”/身弱/养生/国企/不卷/功课参数党/爱干净/可爱风</div>
+                </div>
+            </div>
+        </div>
+        <div class="interview-card">
+            <div class="interview-header">
+                <span class="interview-badge girl">G3</span>
+                <span class="interview-role"></span>
+            </div>
+            <div class="interview-meta">
+                <div class="meta-item"><span class="meta-label">编号</span><span class="meta-value">3</span></div><div class="meta-item"><span class="meta-label">姓名</span><span class="meta-value">没开视频</span></div><div class="meta-item"><span class="meta-label">性别</span><span class="meta-value">女</span></div><div class="meta-item"><span class="meta-label">年龄</span><span class="meta-value">31-35</span></div><div class="meta-item"><span class="meta-label">身高体重</span><span class="meta-value">163/53kg</span></div><div class="meta-item"><span class="meta-label">访谈时间</span><span class="meta-value">0130-11点-12点</span></div><div class="meta-item"><span class="meta-label">手机号</span><span class="meta-value">18123669348</span></div>
+            </div>
+            <div class="interview-qa">
+                
+                <div class="qa-item">
+                    <div class="qa-question">居住地</div>
+                    <div class="qa-answer">深圳-福田</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">工作内容(AI工具？表格文档？)</div>
+                    <div class="qa-answer">处理 Excel 数据、与客户沟通</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">椅子放在哪里？（家？办公室？）</div>
+                    <div class="qa-answer">办公室</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">生活/工作节奏如何？用一些词来形容？
+工作强度？是否长期久坐？</div>
+                    <div class="qa-answer">工作时间从下午到晚上九十点，回家还有通勤，休息较晚12点1点这样。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">如果让你回想一个典型的工作日，从早上到晚上不同时间你在做什么？</div>
+                    <div class="qa-answer">中午出发去公司，先吃饭，然后饭后散步，下午到晚上九十点工作，下班后通勤，回家休息较晚</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">周末会去干什么？兴趣爱好之类的？</div>
+                    <div class="qa-answer">倾向于外出</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">健身习惯？按摩习惯？</div>
+                    <div class="qa-answer">在家做哑铃、壶铃等力量训练；有按摩、spa习惯之前频率很高，有空就去，但后面有一次按摩完颈部不适也了解了按摩手法可能导致损失就减少了。但是买了很多家用按摩器，比如倍轻松的按肩胛骨的、阿童木泡脚桶</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">当时为什么购买OC1？</div>
+                    <div class="qa-answer">陪父亲去看的，但是父亲不喜欢自己又不想错过好产品，旧椅不适，被我们的椅子腰部支撑功能吸引</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">购买前是否对比过其他产品？</div>
+                    <div class="qa-answer">自己是工学椅老用户了，</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">OC1有什么不满意的，改进什么？</div>
+                    <div class="qa-answer">1）购买的 48椅子头枕无法支撑脖子，更换 45 尺寸头枕后舒适度提升
+2）调节过程繁琐：缺乏明确指导，不清楚先调桌面、手托还是座椅，导致调节过程漫长且反复
+3）轮子过滑问题</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">您在家休闲时，通常喜欢做什么？在什么位置进行？（周末和工作日有不同吗？）</div>
+                    <div class="qa-answer">工作日晚上换地方吃饭；周末外出游玩；在家用平板看剧、电影，主要在餐桌上</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在家休闲时，您更常用哪种设备？（手机/平板/电脑/电视）</div>
+                    <div class="qa-answer">平板比较多</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">你在放松完全不要工作的时刻会怎么坐？</div>
+                    <div class="qa-answer">也会盘腿</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">标签</div>
+                    <div class="qa-answer">小老板/人体工学全套接纳/悦己/养生-泡脚/按摩热敷/工作自由</div>
+                </div>
+            </div>
+        </div>
+        <div class="interview-card">
+            <div class="interview-header">
+                <span class="interview-badge girl">G4</span>
+                <span class="interview-role"></span>
+            </div>
+            <div class="interview-meta">
+                <div class="meta-item"><span class="meta-label">编号</span><span class="meta-value">4</span></div><div class="meta-item"><span class="meta-label">姓名</span><span class="meta-value">忘记录制</span></div><div class="meta-item"><span class="meta-label">性别</span><span class="meta-value">女</span></div><div class="meta-item"><span class="meta-label">年龄</span><span class="meta-value">26~30</span></div><div class="meta-item"><span class="meta-label">身高体重</span><span class="meta-value">166/60kg</span></div><div class="meta-item"><span class="meta-label">访谈时间</span><span class="meta-value">0130-16-17点</span></div><div class="meta-item"><span class="meta-label">手机号</span><span class="meta-value">15011506725</span></div>
+            </div>
+            <div class="interview-qa">
+                
+                <div class="qa-item">
+                    <div class="qa-question">居住地</div>
+                    <div class="qa-answer">北京朝阳</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">工作内容(AI工具？表格文档？)</div>
+                    <div class="qa-answer">处理表格多一些，更多是浏览</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">椅子放在哪里？（家？办公室？）</div>
+                    <div class="qa-answer">家里-书房</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">生活/工作节奏如何？用一些词来形容？
+工作强度？是否长期久坐？</div>
+                    <div class="qa-answer">还可以，基本不加班</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">如果让你回想一个典型的工作日，从早上到晚上不同时间你在做什么？</div>
+                    <div class="qa-answer">一周有2天在家办公，3天在公司。上班时间为 9 点到 9 点半，下班时间为 6 点到 6 点半</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">健身习惯？按摩习惯？</div>
+                    <div class="qa-answer">每周都会去，去理疗医院推拿</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">当时为什么购买OC1？</div>
+                    <div class="qa-answer">刚搬家设计书房，且自身腰有损伤（腰间盘膨出），普通椅子不舒服，经朋友推荐并线下体验后购买。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">购买前是否对比过其他产品？</div>
+                    <div class="qa-answer">有对比，但是线下体验觉得西昊和黑白调只有腰部支撑，背部支撑不足</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">OC1有什么不满意的，改进什么？</div>
+                    <div class="qa-answer">为什么买48-身高166.
+座椅记忆？
+电机坏的风险增加了？5年质保能消解。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">OC1主要在什么场景下使用？平均每天用多久？</div>
+                    <div class="qa-answer">在家办公就是8小时，在司办公就是2-3小时。下班回家后会在椅子上复盘基金、股票行情，玩小游戏、与 DeepSeek 聊天</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">有没有哪些姿势或场景，是OC1无法满足的？（盘腿？）</div>
+                    <div class="qa-answer">会盘腿。能接受</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">您在家休闲时，通常喜欢做什么？在什么位置进行？（周末和工作日有不同吗？）</div>
+                    <div class="qa-answer">刷剧、看视频会在沙发上进行</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">标签</div>
+                    <div class="qa-answer">混合办公/新家/功课党/工作不卷/财务/怕脏-买椅套/</div>
+                </div>
+            </div>
+        </div>
+        <div class="interview-card">
+            <div class="interview-header">
+                <span class="interview-badge girl">G5</span>
+                <span class="interview-role"></span>
+            </div>
+            <div class="interview-meta">
+                <div class="meta-item"><span class="meta-label">编号</span><span class="meta-value">5</span></div><div class="meta-item"><span class="meta-label">性别</span><span class="meta-value">女</span></div><div class="meta-item"><span class="meta-label">年龄</span><span class="meta-value">50岁（60退休，延迟退休）</span></div><div class="meta-item"><span class="meta-label">身高体重</span><span class="meta-value">160/57kg</span></div><div class="meta-item"><span class="meta-label">访谈时间</span><span class="meta-value">0202-18-19点</span></div><div class="meta-item"><span class="meta-label">手机号</span><span class="meta-value">13920340567</span></div>
+            </div>
+            <div class="interview-qa">
+                
+                <div class="qa-item">
+                    <div class="qa-question">居住地</div>
+                    <div class="qa-answer">天津-南开区</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">工作内容(AI工具？表格文档？)</div>
+                    <div class="qa-answer">文字的内容多一些；多为浏览文档。键盘输入时间较少。
+使用 AI 工具 （如 DeepSeek 元宝、阿里千问、豆包）辅助生成文稿，会交叉使用验证准确性</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">椅子放在哪里？（家？办公室？）</div>
+                    <div class="qa-answer">办公室</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">生活/工作节奏如何？用一些词来形容？
+工作强度？是否长期久坐？</div>
+                    <div class="qa-answer">阶段性忙碌（年底年初较忙）。生活节奏 ：规律且充实（注重健康管理、运动、学习）</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">如果让你回想一个典型的工作日，从早上到晚上不同时间你在做什么？</div>
+                    <div class="qa-answer">需长时间久坐，上班时间（8:30-17:00）除午休、上厕所和喝水外基本久坐。
+8:30-17:00 ：办公室处理文档、浏览网页，使用两台电脑（内网 + 外网），中午午休 1.5 小时。
+下班后 ：晚饭后散步或居家运动（拉伸、力量训练），听书、关注股市资讯或学英语</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">周末会去干什么？兴趣爱好之类的？</div>
+                    <div class="qa-answer">陪回国实习的孩子做饭、逛街，或读书、看展；计划后面用女儿买的相机 “扫街” 拍摄</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">健身习惯？按摩习惯？</div>
+                    <div class="qa-answer">按摩推拿（每周一次全身按摩1小时）、会买保健品；</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">当时为什么购买OC1？</div>
+                    <div class="qa-answer">被背部贴合吸引，旧工学椅（网易严选）姿势改变后腰部支撑不足。
+作为新年和生日礼物，且5年质保可使用至退休。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">购买前是否对比过其他产品？</div>
+                    <div class="qa-answer">网易严选</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">OC1有什么不满意的，改进什么？</div>
+                    <div class="qa-answer">希望有座套，和脚垫套，考虑清洁问题。推荐给了同事。也有这样的困扰。椅子很舒服，反而导致久坐。希望有久坐提醒。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">OC1主要在什么场景下使用？平均每天用多久？</div>
+                    <div class="qa-answer">日常办公</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">您在家休闲时，通常喜欢做什么？在什么位置进行？（周末和工作日有不同吗？）</div>
+                    <div class="qa-answer">周末，跑步、做饭、看电影。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在家休闲时，您更常用哪种设备？（手机/平板/电脑/电视）</div>
+                    <div class="qa-answer">手机 （看 / 听书、直播讲座、学英语）</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">标签</div>
+                    <div class="qa-answer">50岁办公室/事业单位-低调/悦己/持续学习，学英语、金融、AI/</div>
+                </div>
+            </div>
+        </div>
+        <div class="interview-card">
+            <div class="interview-header">
+                <span class="interview-badge girl">G6</span>
+                <span class="interview-role"></span>
+            </div>
+            <div class="interview-meta">
+                <div class="meta-item"><span class="meta-label">编号</span><span class="meta-value">6</span></div><div class="meta-item"><span class="meta-label">性别</span><span class="meta-value">女</span></div><div class="meta-item"><span class="meta-label">年龄</span><span class="meta-value">46~50</span></div><div class="meta-item"><span class="meta-label">身高体重</span><span class="meta-value">166/60kg</span></div><div class="meta-item"><span class="meta-label">访谈时间</span><span class="meta-value">0204-11-12点</span></div><div class="meta-item"><span class="meta-label">手机号</span><span class="meta-value">13818931527</span></div>
+            </div>
+            <div class="interview-qa">
+                
+                <div class="qa-item">
+                    <div class="qa-question">居住地</div>
+                    <div class="qa-answer">上海浦东</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">工作内容(AI工具？表格文档？)</div>
+                    <div class="qa-answer">行政工作，会使用电脑（台式机、笔记本）处理事务。公司20多个人</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">椅子放在哪里？（家？办公室？）</div>
+                    <div class="qa-answer">办公室</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">生活/工作节奏如何？用一些词来形容？
+工作强度？是否长期久坐？</div>
+                    <div class="qa-answer">久坐、时间长；充实；上班时间早九晚六。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">如果让你回想一个典型的工作日，从早上到晚上不同时间你在做什么？</div>
+                    <div class="qa-answer">7点多就起，起来收拾然后通勤去公司。坐地铁路上会听财经类直播
+为错峰可能 9 点半到。白天：在办公室久坐办公，使用电脑处理行政工作。晚上6 点半下班，坐地铁回家约 7 点半，之后刷视频号学习、处理家务等，10 点、11 点左右休息。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">周末会去干什么？兴趣爱好之类的？</div>
+                    <div class="qa-answer">去父母家、在家收拾家务、补酥梨的内部课、看直播回放、去健身房快走、参加苏黎的线下课
+兴趣爱好：刷视频号（金融底层逻辑、国际形势分析等内容）、研究金融、学习 ETF 等金融知识</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">健身习惯？按摩习惯？</div>
+                    <div class="qa-answer">健身习惯：一周两到三次去连锁健身房快走，每次半小时，坡度调 10、速度 5
+按摩习惯：会按摩，但没有固定频率，不是一直去按</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">当时为什么购买OC1？</div>
+                    <div class="qa-answer">【KOL推荐】是酥梨的粉丝，信任其推荐，自身办公时间长，为改善办公环境，自费购买</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">购买前是否对比过其他产品？</div>
+                    <div class="qa-answer">没有，没时间调研其他椅子</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">OC1有什么不满意的，改进什么？</div>
+                    <div class="qa-answer">不满意：头枕只能枕在后脑勺，未实现贴合颈部的功能；腰靠只能前后调节，需要上下调节
+改进建议：头枕希望能贴合颈部；腰靠增加上下调节功能；针对单独功能制作小视频方便用户学习；在椅子按钮旁贴功能贴纸</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">OC1主要在什么场景下使用？平均每天用多久？</div>
+                    <div class="qa-answer">办公场景，平均每天使用约 9 小时</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">您在家休闲时，通常喜欢做什么？在什么位置进行？（周末和工作日有不同吗？）</div>
+                    <div class="qa-answer">在家休闲时刷视频号、处理家务，位置不固定，人到哪里手机到哪里；周末可能去父母家或参加线下课，与工作日在家休闲活动类似</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在家休闲时，您更常用哪种设备？（手机/平板/电脑/电视）</div>
+                    <div class="qa-answer">手机</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">标签</div>
+                    <div class="qa-answer">KOL信任/翡翠/行政/高自主学习</div>
+                </div>
+            </div>
+        </div>
+        <div class="interview-card">
+            <div class="interview-header">
+                <span class="interview-badge girl">G7</span>
+                <span class="interview-role"></span>
+            </div>
+            <div class="interview-meta">
+                <div class="meta-item"><span class="meta-label">编号</span><span class="meta-value">7</span></div><div class="meta-item"><span class="meta-label">性别</span><span class="meta-value">女</span></div><div class="meta-item"><span class="meta-label">年龄</span><span class="meta-value">36~40</span></div><div class="meta-item"><span class="meta-label">身高体重</span><span class="meta-value">163/54kg</span></div><div class="meta-item"><span class="meta-label">月收入</span><span class="meta-value">30,000-39,999元</span></div><div class="meta-item"><span class="meta-label">访谈时间</span><span class="meta-value">0205-15-16点</span></div><div class="meta-item"><span class="meta-label">手机号</span><span class="meta-value">13588298416</span></div>
+            </div>
+            <div class="interview-qa">
+                
+                <div class="qa-item">
+                    <div class="qa-question">居住地</div>
+                    <div class="qa-answer">浙江杭州</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">工作内容(AI工具？表格文档？)</div>
+                    <div class="qa-answer">ppt多和 CAD 软件，处理图形类工作较多，包括设计方案沟通、优化方向确认等</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">椅子放在哪里？（家？办公室？）</div>
+                    <div class="qa-answer">办公室</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">生活/工作节奏如何？用一些词来形容？
+工作强度？是否长期久坐？</div>
+                    <div class="qa-answer">工作时间长，加班频繁（去年忙时加班至十一二点，最近为七八点）</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">如果让你回想一个典型的工作日，从早上到晚上不同时间你在做什么？</div>
+                    <div class="qa-answer">上午 9 点 到岗开始工作，开车通勤，距离2公里，开车5分钟。
+上班主要都是坐着。这段时间因腰肌劳损会刻意起身走动。
+晚上：加班至七八点（忙时十一二点），下班后回家带娃</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">周末会去干什么？兴趣爱好之类的？</div>
+                    <div class="qa-answer">补觉；约孩子的小朋友去公园游玩。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">健身习惯？按摩习惯？</div>
+                    <div class="qa-answer">快走（使用家用跑步机）、偶尔打羽毛球（因搭子生病近期较少）
+每周一次商业按摩，办有年卡；购买过倍轻松兰博基尼腰部按摩仪（1900 元左右）和眼部按摩仪（2000 元不到）</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">当时为什么购买OC1？</div>
+                    <div class="qa-answer">【健康】同事推荐，试用后觉得腰支撑功能 能缓解腰肌劳损，当时正处于腰疼发作期</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">购买前是否对比过其他产品？</div>
+                    <div class="qa-answer">没有对比过</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">OC1有什么不满意的，改进什么？</div>
+                    <div class="qa-answer">无法挂衣物 ：椅背上无法披大衣或放置毯子，建议增加衣架配件
+腰靠记忆功能 ：误以为腰靠会自动复位（实际为误触按摩功能导致</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">OC1主要在什么场景下使用？平均每天用多久？</div>
+                    <div class="qa-answer">每天久坐多久。上午九点，最近七八点。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">您在家休闲时，通常喜欢做什么？在什么位置进行？（周末和工作日有不同吗？）</div>
+                    <div class="qa-answer">周末去</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">标签</div>
+                    <div class="qa-answer">加班/设计/效率/宝妈</div>
+                </div>
+            </div>
+        </div>
+        <div class="interview-card">
+            <div class="interview-header">
+                <span class="interview-badge green">S1</span>
+                <span class="interview-role"></span>
+            </div>
+            <div class="interview-meta">
+                <div class="meta-item"><span class="meta-label">姓名</span><span class="meta-value">高居航</span></div><div class="meta-item"><span class="meta-label">性别</span><span class="meta-value">男</span></div><div class="meta-item"><span class="meta-label">年龄</span><span class="meta-value">32岁</span></div><div class="meta-item"><span class="meta-label">访谈时间</span><span class="meta-value">1月6日 10:30-11:30</span></div>
+            </div>
+            <div class="interview-qa">
+                
+                <div class="qa-item">
+                    <div class="qa-question">居住地</div>
+                    <div class="qa-answer">北京市通州区通典铭居 E 座 1603 室 家</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">椅子放在哪里？（家？办公室？）</div>
+                    <div class="qa-answer">家。在家办公的时间。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">生活/工作节奏如何？
+如果用一些词来形容自己的生活，你会如何形容？</div>
+                    <div class="qa-answer">工作很紧张，有一半时间解决问题，加班。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在购买这把椅子之前，您使用的是什么椅子？使用了多久？</div>
+                    <div class="qa-answer">17年买的京东京造，用了5年，500块买的。那时候刚上班觉得很贵了，简单的升降，可以躺平但是不稳定。腿喜欢翘在。在宜家买了躺椅。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">当时促使您想要换掉旧椅子的最主要原因是什么？（如：旧椅子坏了，久坐不适、腰部问题、居家办公升级、装修换代等）</div>
+                    <div class="qa-answer">在招商银行的椅子拘束着。契机。颈椎不舒服。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">换椅子有一个大概的预算范围吗？为什么是这个范围？</div>
+                    <div class="qa-answer">没有预算。3千左右。不超过5千。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在最终决定购买这款椅子之前，您还考虑过哪些其他品牌或型号？（请务必追问出具体品牌和型号）</div>
+                    <div class="qa-answer">有关注黑白调和赫曼米勒。但都觉得没有解决他的支撑性需求</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">您是如何在这几个选择之间进行对比和权衡的？最关注哪几个方面？（如：价格、腰背支撑感、可调节性、外观颜值、品牌信誉、面料材质等）请对每个关注点详细说明。</div>
+                    <div class="qa-answer">腰背支撑感</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">新椅子哪个点让你觉得“就是它了”？（追问决定性因素）</div>
+                    <div class="qa-answer">腰部支撑</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">换新椅子后您最明显的感受是什么？和之前有什么不同？</div>
+                    <div class="qa-answer">很舒服。腰部和头枕都有支撑。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">1、如果我们没有绿色款的椅子，你会买黑白吗？
+2、如果我们没有绿色的椅子，但是除了黑白有其他彩色（黄、红、蓝）你会买黑白还是彩色？</div>
+                    <div class="qa-answer">1、会，黑色的，耐脏
+2、需要看具体的，比如咱们这个是暗绿我买了，如果是那种亮绿我也可能会选黑白</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">颜色：除了现有的颜色，您还希望看到哪些新的颜色或配色方案？（例如，更沉稳的莫兰迪色、更活泼的亮色、或其他材质质感如牛仔布纹）</div>
+                    <div class="qa-answer">胡桃木，餐边柜。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">您每天大概会在这把椅子上坐多久？主要用它来做什么？（如：办公、打游戏、阅读、休息）</div>
+                    <div class="qa-answer">工作日下班4个小时左右，周末也用。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在您当前的使用过程中，有没有发现一些不够满意或者觉得可以改进的地方？</div>
+                    <div class="qa-answer">价格贵，</div>
+                </div>
+            </div>
+        </div>
+        <div class="interview-card">
+            <div class="interview-header">
+                <span class="interview-badge green">S2</span>
+                <span class="interview-role"></span>
+            </div>
+            <div class="interview-meta">
+                <div class="meta-item"><span class="meta-label">姓名</span><span class="meta-value">白羊羊</span></div><div class="meta-item"><span class="meta-label">性别</span><span class="meta-value">女</span></div><div class="meta-item"><span class="meta-label">年龄</span><span class="meta-value">30+岁</span></div><div class="meta-item"><span class="meta-label">身高体重</span><span class="meta-value">身高165cm，体重106kg</span></div><div class="meta-item"><span class="meta-label">访谈时间</span><span class="meta-value">1月6日 14:00-15:00</span></div>
+            </div>
+            <div class="interview-qa">
+                
+                <div class="qa-item">
+                    <div class="qa-question">居住地</div>
+                    <div class="qa-answer">深圳前海，合租两房一厅，70平。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">椅子放在哪里？（家？办公室？）</div>
+                    <div class="qa-answer">公司用</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">生活/工作节奏如何？
+如果用一些词来形容自己的生活，你会如何形容？</div>
+                    <div class="qa-answer">工作和生活都很充实，每天工作 12 小时，下班后有打网球、拼图、线下看演出、追星等兴趣爱好。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在购买这把椅子之前，您使用的是什么椅子？使用了多久？</div>
+                    <div class="qa-answer">公司统一买的，但是花了400-500买了style艾尔牌子花瓣坐垫，很硬。也买了脚垫。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">当时促使您想要换掉旧椅子的最主要原因是什么？（如：旧椅子坏了，久坐不适、腰部问题、居家办公升级、装修换代等）</div>
+                    <div class="qa-answer">契机是腿麻，持续几个月。拍了片子是腰突。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">换椅子有一个大概的预算范围吗？为什么是这个范围？</div>
+                    <div class="qa-answer">预算在1500左右。但是去45up试了之后觉得1500左右的都不舒服。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在最终决定购买这款椅子之前，您还考虑过哪些其他品牌或型号？（请务必追问出具体品牌和型号）</div>
+                    <div class="qa-answer">西昊c200还是pro要2000出头，担心网格布坐久了会软塌。网易严选s9对网易品牌是比较信任。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">您是如何在这几个选择之间进行对比和权衡的？最关注哪几个方面？（如：价格、腰背支撑感、可调节性、外观颜值、品牌信誉、面料材质等）请对每个关注点详细说明。</div>
+                    <div class="qa-answer">重点关注腰部承托力，并且会跟随调整。坐深不能太短。坐的要舒服。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">新椅子哪个点让你觉得“就是它了”？（追问决定性因素）</div>
+                    <div class="qa-answer">整个腰部承托很舒服。在门店坐了48cm黑色的椅子，觉得海绵垫子很扎实。不会下滑</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">换新椅子后您最明显的感受是什么？和之前有什么不同？</div>
+                    <div class="qa-answer">躺着也很舒服，所以中午不睡午睡床了。而且站立办公的时间也减少了，因为坐着也比较舒服。（办公室使用，同事体验完称赞舒适并且外观高级，还有拉伸功能很不错）</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">1、如果我们没有绿色款的椅子，你会买黑白吗？
+2、如果我们没有绿色的椅子，但是除了黑白有其他彩色（黄、红、蓝）你会买黑白还是彩色？</div>
+                    <div class="qa-answer">1、会买白色或者有星舰色的话会考虑
+2、彩色（蓝色藏青那种也可以）</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">颜色：除了现有的颜色，您还希望看到哪些新的颜色或配色方案？（例如，更沉稳的莫兰迪色、更活泼的亮色、或其他材质质感如牛仔布纹）</div>
+                    <div class="qa-answer">实体店看到一个星舰色，没有绿色好看。希望推出更多好看的颜色，如兼顾耐脏和美观的颜色。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">面料：您对目前椅子的面料（透气性、触感、耐久度）有什么评价？未来如果推出其他面料（如更凉爽的网布、更亲肤的绒布、防水防污涂层等），您会有兴趣吗？</div>
+                    <div class="qa-answer">透气性和质感也不错。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">您每天大概会在这把椅子上坐多久？主要用它来做什么？（如：办公、打游戏、阅读、休息）</div>
+                    <div class="qa-answer">12个小时上班时间，用来工作</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在您当前的使用过程中，有没有发现一些不够满意或者觉得可以改进的地方？</div>
+                    <div class="qa-answer">1、按摩的时间需要设置。现在太短，期望10-15分钟。2、椅子轮子固定，现在过于丝滑。 3、椅背有点窄，午休手没地方放。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">抛开现有技术和价格，你梦想中的椅子是什么样的？【追问原因】</div>
+                    <div class="qa-answer">包裹性，支撑性。什么姿势都能适配，自动包裹住。</div>
+                </div>
+            </div>
+        </div>
+        <div class="interview-card">
+            <div class="interview-header">
+                <span class="interview-badge green">S3</span>
+                <span class="interview-role"></span>
+            </div>
+            <div class="interview-meta">
+                <div class="meta-item"><span class="meta-label">姓名</span><span class="meta-value">曾先生</span></div><div class="meta-item"><span class="meta-label">性别</span><span class="meta-value">男</span></div><div class="meta-item"><span class="meta-label">年龄</span><span class="meta-value">35岁</span></div><div class="meta-item"><span class="meta-label">身高体重</span><span class="meta-value">170cm，65kg</span></div><div class="meta-item"><span class="meta-label">访谈时间</span><span class="meta-value">1月6日 16:00-17:00</span></div>
+            </div>
+            <div class="interview-qa">
+                
+                <div class="qa-item">
+                    <div class="qa-question">居住地</div>
+                    <div class="qa-answer">广州，自己的房子</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">椅子放在哪里？（家？办公室？）</div>
+                    <div class="qa-answer">3房一厅，晚上会使用</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">生活/工作节奏如何？
+如果用一些词来形容自己的生活，你会如何形容？</div>
+                    <div class="qa-answer">工作：反复和有计划性，工作比较忙；生活：比较零碎</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在购买这把椅子之前，您使用的是什么椅子？使用了多久？</div>
+                    <div class="qa-answer">之前书房放的就是普通的椅子，去年10月入住新房就想买但是书房使用频率不高而且没有合适的椅子就没买。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">当时促使您想要换掉旧椅子的最主要原因是什么？（如：旧椅子坏了，久坐不适、腰部问题、居家办公升级、装修换代等）</div>
+                    <div class="qa-answer">表弟众筹的时候买来一把灰色的，12月去他家的时候体验了觉得坐感不错就决定买。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">换椅子有一个大概的预算范围吗？为什么是这个范围？</div>
+                    <div class="qa-answer">4000元以下可以，预算没有很死，重点是要舒服合适。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在最终决定购买这款椅子之前，您还考虑过哪些其他品牌或型号？（请务必追问出具体品牌和型号）</div>
+                    <div class="qa-answer">永艺550，一直收藏夹吃灰。但是觉得跟办公室坐的差不多，就没有买。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">您是如何在这几个选择之间进行对比和权衡的？最关注哪几个方面？（如：价格、腰背支撑感、可调节性、外观颜值、品牌信誉、面料材质等）请对每个关注点详细说明。</div>
+                    <div class="qa-answer">还是要坐的舒适。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">新椅子哪个点让你觉得“就是它了”？（追问决定性因素）</div>
+                    <div class="qa-answer">跟其他的椅子都不一样，海绵比较舒服，还有背部的支撑很贴合。看上去很有科技感</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">换新椅子后您最明显的感受是什么？和之前有什么不同？</div>
+                    <div class="qa-answer">坐着很舒服。颜色也符合预期</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">1、如果我们没有绿色款的椅子，你会买黑白吗？
+2、如果我们没有绿色的椅子，但是除了黑白有其他彩色（黄、红、蓝）你会买黑白还是彩色？</div>
+                    <div class="qa-answer">1，会考虑黑色;
+2、彩色(红 蓝)</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">颜色：除了现有的颜色，您还希望看到哪些新的颜色或配色方案？（例如，更沉稳的莫兰迪色、更活泼的亮色、或其他材质质感如牛仔布纹）</div>
+                    <div class="qa-answer">沙发是灰色的。可能出棕色的也能比较好适配家庭环境。家里仅有的绿色是龟背竹，放在客厅。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">面料：您对目前椅子的面料（透气性、触感、耐久度）有什么评价？未来如果推出其他面料（如更凉爽的网布、更亲肤的绒布、防水防污涂层等），您会有兴趣吗？</div>
+                    <div class="qa-answer">耐脏。但是担心夏天不透气会热</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">您每天大概会在这把椅子上坐多久？主要用它来做什么？（如：办公、打游戏、阅读、休息）</div>
+                    <div class="qa-answer">7-8点下班。饭后去椅子收集资料和观影2-3小时。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在您当前的使用过程中，有没有发现一些不够满意或者觉得可以改进的地方？</div>
+                    <div class="qa-answer">1、坐深在一档是够的，但是往下面档位的话会有点短。2、轮子支架是塑料的，担心会坏掉，或者脏了。3、扶手太顺滑了，躺下太滑。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">抛开现有技术和价格，你梦想中的椅子是什么样的？【追问原因】</div>
+                    <div class="qa-answer">坐下去有一种睡着床上的感觉，放松宁静。</div>
+                </div>
+            </div>
+        </div>
+        <div class="interview-card">
+            <div class="interview-header">
+                <span class="interview-badge green">S4</span>
+                <span class="interview-role"></span>
+            </div>
+            <div class="interview-meta">
+                <div class="meta-item"><span class="meta-label">姓名</span><span class="meta-value">颜俐</span></div><div class="meta-item"><span class="meta-label">性别</span><span class="meta-value">女</span></div><div class="meta-item"><span class="meta-label">年龄</span><span class="meta-value">35岁</span></div><div class="meta-item"><span class="meta-label">身高体重</span><span class="meta-value">156cm，62.6kg</span></div><div class="meta-item"><span class="meta-label">访谈时间</span><span class="meta-value">1月7日 10:00-11:00</span></div>
+            </div>
+            <div class="interview-qa">
+                
+                <div class="qa-item">
+                    <div class="qa-question">居住地</div>
+                    <div class="qa-answer">深圳坂田</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">椅子放在哪里？（家？办公室？）</div>
+                    <div class="qa-answer">家里书房</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">使用场景图片</div>
+                    <div class="qa-answer">出差中回家发</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">生活/工作节奏如何？
+如果用一些词来形容自己的生活，你会如何形容？</div>
+                    <div class="qa-answer">比较灵活。白天一般在外面，晚上回家。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在购买这把椅子之前，您使用的是什么椅子？使用了多久？</div>
+                    <div class="qa-answer">书房有两把椅子，一把西昊，24年搬家时买的。伴侣使用。镂空网面。比较舒适通风。另一把自己淘宝买的200多，普通椅子，没有轮子。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">当时促使您想要换掉旧椅子的最主要原因是什么？（如：旧椅子坏了，久坐不适、腰部问题、居家办公升级、装修换代等）</div>
+                    <div class="qa-answer">自己一直想买工学椅但是没有合适的，旧椅子腰靠和头枕都不舒服，而且没有轮子不方便移动。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">换椅子有一个大概的预算范围吗？为什么是这个范围？</div>
+                    <div class="qa-answer">没有预算，当时西昊2000出头买的。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在最终决定购买这款椅子之前，您还考虑过哪些其他品牌或型号？（请务必追问出具体品牌和型号）</div>
+                    <div class="qa-answer">看过西昊的都不喜欢，身高不高，那些椅子坐着不舒服</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">您是如何在这几个选择之间进行对比和权衡的？最关注哪几个方面？（如：价格、腰背支撑感、可调节性、外观颜值、品牌信誉、面料材质等）请对每个关注点详细说明。</div>
+                    <div class="qa-answer">腰背支撑性，坐的舒服</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">新椅子哪个点让你觉得“就是它了”？（追问决定性因素）</div>
+                    <div class="qa-answer">绿色很特别，加上自己喜欢绿色，在智能椅子里很少见。也体验了坐感很舒服。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">换新椅子后您最明显的感受是什么？和之前有什么不同？</div>
+                    <div class="qa-answer">贴合感。自如（不需要留意坐姿这个事情）椅子适应性强。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">1、如果我们没有绿色款的椅子，你会买黑白吗？
+2、如果我们没有绿色的椅子，但是除了黑白有其他彩色（黄、红、蓝）你会买黑白还是彩色？</div>
+                    <div class="qa-answer">1. 我大概率不会，但我伴侣说他送人的话也会买；
+2. 会买彩色。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">颜色：除了现有的颜色，您还希望看到哪些新的颜色或配色方案？（例如，更沉稳的莫兰迪色、更活泼的亮色、或其他材质质感如牛仔布纹）</div>
+                    <div class="qa-answer">觉得不用太多颜色</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">您每天大概会在这把椅子上坐多久？主要用它来做什么？（如：办公、打游戏、阅读、休息）</div>
+                    <div class="qa-answer">晚上2-3小时</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在您当前的使用过程中，有没有发现一些不够满意或者觉得可以改进的地方？</div>
+                    <div class="qa-answer">1、觉得自己身高不高，头枕位置不贴合，能接受不算什么大问题</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">关于椅子的使用，还有什么是我没有问到但是您觉得重要的？</div>
+                    <div class="qa-answer">喜欢清闲的点：不是订阅产品但是有定期用户关怀，天气冷送一个毯子</div>
+                </div>
+            </div>
+        </div>
+        <div class="interview-card">
+            <div class="interview-header">
+                <span class="interview-badge green">S5</span>
+                <span class="interview-role"></span>
+            </div>
+            <div class="interview-meta">
+                <div class="meta-item"><span class="meta-label">姓名</span><span class="meta-value">吴先生</span></div><div class="meta-item"><span class="meta-label">性别</span><span class="meta-value">男</span></div><div class="meta-item"><span class="meta-label">年龄</span><span class="meta-value">32岁</span></div><div class="meta-item"><span class="meta-label">身高体重</span><span class="meta-value">175cm 155斤</span></div><div class="meta-item"><span class="meta-label">访谈时间</span><span class="meta-value">1月7日 15:00-16:00</span></div>
+            </div>
+            <div class="interview-qa">
+                
+                <div class="qa-item">
+                    <div class="qa-question">居住地</div>
+                    <div class="qa-answer">深圳后海</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">椅子放在哪里？（家？办公室？）</div>
+                    <div class="qa-answer">办公室</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">生活/工作节奏如何？
+如果用一些词来形容自己的生活，你会如何形容？</div>
+                    <div class="qa-answer">工作不忙，还好，早九晚六</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在购买这把椅子之前，您使用的是什么椅子？使用了多久？</div>
+                    <div class="qa-answer">公司是统一配的。家里也有2000多的工学椅，好几年了。网状有点变形。坐感还可以。用了一年多。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">当时促使您想要换掉旧椅子的最主要原因是什么？（如：旧椅子坏了，久坐不适、腰部问题、居家办公升级、装修换代等）</div>
+                    <div class="qa-answer">在公司午睡放不下床，有一天睡椅子上起来腰很疼。就想买一张舒服的能躺下的椅子</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">换椅子有一个大概的预算范围吗？为什么是这个范围？</div>
+                    <div class="qa-answer">没有预算，3000+差不多能接受的上限，主要看舒适性。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在最终决定购买这款椅子之前，您还考虑过哪些其他品牌或型号？（请务必追问出具体品牌和型号）</div>
+                    <div class="qa-answer">没有对比</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">您是如何在这几个选择之间进行对比和权衡的？最关注哪几个方面？（如：价格、腰背支撑感、可调节性、外观颜值、品牌信誉、面料材质等）请对每个关注点详细说明。</div>
+                    <div class="qa-answer">主要是能躺倒比较舒服，然后电动调节很高级</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">新椅子哪个点让你觉得“就是它了”？（追问决定性因素）</div>
+                    <div class="qa-answer">1、背部曲线调档位是电动调节，很有仪式感很高级。2、有拉伸是加分项。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">换新椅子后您最明显的感受是什么？和之前有什么不同？</div>
+                    <div class="qa-answer">腰不疼了 ，中午躺卧休息时腰部不适感消失</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">1、你希望朋友和同事看到这把椅子时，对你产生什么印象？</div>
+                    <div class="qa-answer">追求个性但不张扬，不那么突出；椅子的高级感和设计感能反映自身对品质的注重，而非刻意展示给他人</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">1、如果我们没有绿色款的椅子，你会买黑白吗？
+2、如果我们没有绿色的椅子，但是除了黑白有其他彩色（黄、红、蓝）你会买黑白还是彩色？</div>
+                    <div class="qa-answer">1、会买，星舰色。黑色。白色不耐脏。
+2、太彩色就不行。绿色不那么艳丽，放家里会。亮绿也不要。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">您每天大概会在这把椅子上坐多久？主要用它来做什么？（如：办公、打游戏、阅读、休息）</div>
+                    <div class="qa-answer">8小时</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在您当前的使用过程中，有没有发现一些不够满意或者觉得可以改进的地方？</div>
+                    <div class="qa-answer">1、头枕不够往前。2、坐高想再低一点；3、调档位会晃4、头枕上下角度贴不了，贴不到后脑勺4、现在座椅比较大。坐垫加长一点点。48cm想长一点。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">抛开现有技术和价格，你梦想中的椅子是什么样的？【追问原因】</div>
+                    <div class="qa-answer">有按摩功能，多两个背带过来。会前申。做到汽车座椅的水平（通风和加热）。脚踏不能调节，想调矮一点。</div>
+                </div>
+            </div>
+        </div>
+        <div class="interview-card">
+            <div class="interview-header">
+                <span class="interview-badge green">S6</span>
+                <span class="interview-role"></span>
+            </div>
+            <div class="interview-meta">
+                <div class="meta-item"><span class="meta-label">姓名</span><span class="meta-value">吴生森</span></div><div class="meta-item"><span class="meta-label">性别</span><span class="meta-value">男</span></div><div class="meta-item"><span class="meta-label">年龄</span><span class="meta-value">28岁</span></div><div class="meta-item"><span class="meta-label">身高体重</span><span class="meta-value">173 75kg</span></div><div class="meta-item"><span class="meta-label">访谈时间</span><span class="meta-value">1月8日 17:00-18:00</span></div>
+            </div>
+            <div class="interview-qa">
+                
+                <div class="qa-item">
+                    <div class="qa-question">居住地</div>
+                    <div class="qa-answer">北京</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">椅子放在哪里？（家？办公室？）</div>
+                    <div class="qa-answer">家里书房</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">使用场景图片</div>
+                    <div class="qa-answer">出差中回家发</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">生活/工作节奏如何？
+如果用一些词来形容自己的生活，你会如何形容？</div>
+                    <div class="qa-answer">工作比较稳定，有加班，一般早上7-8点起床，起来会搞一些自己兴趣的代码工作1个多小时，然后再去上班。工作时间是10点半到21点，下班后回家会再搞2-3小时的兴趣或者看剧。工作之余，爱好是健身一周2-3次、爬山；自己组合电子产品。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在购买这把椅子之前，您使用的是什么椅子？使用了多久？</div>
+                    <div class="qa-answer">研究生时买的西昊，1000多。最近有点坏了，头枕被自己碰断了，坐垫网面比较塌。用了3年。觉得当时1000多算是中等花销，用3年还行。现在旧椅子也放书房，和清闲并排放。书房布局：10多平，有个衣柜。前面是一个升降桌1.7米✖️70cm。后面是一个书架，左边是窗户。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">当时促使您想要换掉旧椅子的最主要原因是什么？（如：旧椅子坏了，久坐不适、腰部问题、居家办公升级、装修换代等）</div>
+                    <div class="qa-answer">旧椅子没完全坏，但是坐着没有特别舒服，主要是头部和腰的舒适性不足。10月多想换。11月多去线下门店体验了，人体工学椅集合店。双十一过了。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">换椅子有一个大概的预算范围吗？为什么是这个范围？</div>
+                    <div class="qa-answer">4000以下都能接受</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在最终决定购买这款椅子之前，您还考虑过哪些其他品牌或型号？（请务必追问出具体品牌和型号）</div>
+                    <div class="qa-answer">西昊c300，2000-3000.西昊正着做的时候是舒服的，躺下腰是不舒服会悬空。
+体验完清闲的挺不错的。带电机的功能比较fancy。主要是调节腰部曲线。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">您是如何在这几个选择之间进行对比和权衡的？最关注哪几个方面？（如：价格、腰背支撑感、可调节性、外观颜值、品牌信誉、面料材质等）请对每个关注点详细说明。</div>
+                    <div class="qa-answer">腰部和头部的支撑性第一，舒适性》价格。可调节性反而不是特别关注，不经常调节。当时纠结西昊因为价格比清闲低，正做舒适度也可以，清闲差一点的是整体配件是塑料的，可能比较容易老化。而且没有扶手6d方向的调节</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">新椅子哪个点让你觉得“就是它了”？（追问决定性因素）</div>
+                    <div class="qa-answer">女朋友一起去的。销售说清闲用电机调背部曲线，两个人都会比较方便。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">换新椅子后您最明显的感受是什么？和之前有什么不同？</div>
+                    <div class="qa-answer">腰部支撑不管哪个角度都好。往后仰腰和头都支撑不错。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">1、你希望朋友和同事看到这把椅子时，对你产生什么印象？</div>
+                    <div class="qa-answer">觉得椅子特别。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">1、如果我们没有绿色款的椅子，你会买黑白吗？
+2、如果我们没有绿色的椅子，但是除了黑白有其他彩色（黄、红、蓝）你会买黑白还是彩色？</div>
+                    <div class="qa-answer">1、会买。黑的耐脏。
+2、不太确定。还是要看具体的颜色。自己衣服灰色黑白和军绿色裤子多一点。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">您每天大概会在这把椅子上坐多久？主要用它来做什么？（如：办公、打游戏、阅读、休息）</div>
+                    <div class="qa-answer">工作日2-3小时；周末4-5小时</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在您当前的使用过程中，有没有发现一些不够满意或者觉得可以改进的地方？</div>
+                    <div class="qa-answer">正坐，脖子支撑不好，行程不够。没有6d扶手。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">抛开现有技术和价格，你梦想中的椅子是什么样的？【追问原因】</div>
+                    <div class="qa-answer">现在这个就很符合想象。电机贴合腰线。最最理性的是实时看整体的压强进行调节。头枕不是很智能。希望跟随。</div>
+                </div>
+            </div>
+        </div>
+        <div class="interview-card">
+            <div class="interview-header">
+                <span class="interview-badge green">S7</span>
+                <span class="interview-role"></span>
+            </div>
+            <div class="interview-meta">
+                <div class="meta-item"><span class="meta-label">姓名</span><span class="meta-value">张安博</span></div><div class="meta-item"><span class="meta-label">性别</span><span class="meta-value">女</span></div><div class="meta-item"><span class="meta-label">身高体重</span><span class="meta-value">52kg</span></div><div class="meta-item"><span class="meta-label">访谈时间</span><span class="meta-value">时间不行，文字简单聊</span></div>
+            </div>
+            <div class="interview-qa">
+                
+                <div class="qa-item">
+                    <div class="qa-question">居住地</div>
+                    <div class="qa-answer">深圳福田</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">当时促使您想要换掉旧椅子的最主要原因是什么？（如：旧椅子坏了，久坐不适、腰部问题、居家办公升级、装修换代等）</div>
+                    <div class="qa-answer">坐时间比较久，一直都用人体工学椅。 原来人体工学椅-保友金豪腰部支撑不够（还是需要垫枕头），不直接适配，颈椎部分支持更少；另外原来椅子比较低配，可个性化调整的东西不多</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">新椅子哪个点让你觉得“就是它了”？（追问决定性因素）</div>
+                    <div class="qa-answer">腰部支持足够</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">1、如果我们没有绿色款的椅子，你会买黑白吗？
+2、如果我们没有绿色的椅子，但是除了黑白有其他彩色（黄、红、蓝）你会买黑白还是彩色？</div>
+                    <div class="qa-answer">1、会买白色
+2、不太确定，看具体颜色。选白色也行</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在您当前的使用过程中，有没有发现一些不够满意或者觉得可以改进的地方？</div>
+                    <div class="qa-answer">1、4档有种压不到底，压不实的感觉，特别是对于小体重女生？（已经调松了力度），感觉躺下要隐隐用力。
+2、椅子的最低高度还是有点高，如果不是升降桌，对于部分桌子偏高，相当于如果不是看屏幕，而是伏案的话，不是最适配</div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <div id="tab-girl" class="tab-content">
+        <div class="interviews-grid">
+
+        <div class="interview-card">
+            <div class="interview-header">
+                <span class="interview-badge girl">G1</span>
+                <span class="interview-role"></span>
+            </div>
+            <div class="interview-meta">
+                <div class="meta-item"><span class="meta-label">编号</span><span class="meta-value">1</span></div><div class="meta-item"><span class="meta-label">性别</span><span class="meta-value">女</span></div><div class="meta-item"><span class="meta-label">年龄</span><span class="meta-value">31-35</span></div><div class="meta-item"><span class="meta-label">身高体重</span><span class="meta-value">165/53kg</span></div><div class="meta-item"><span class="meta-label">月收入</span><span class="meta-value">30,000-39,999元</span></div><div class="meta-item"><span class="meta-label">访谈时间</span><span class="meta-value">0129-15点-16点</span></div><div class="meta-item"><span class="meta-label">手机号</span><span class="meta-value">15810895706</span></div>
+            </div>
+            <div class="interview-qa">
+                
+                <div class="qa-item">
+                    <div class="qa-question">居住地</div>
+                    <div class="qa-answer">北京-丰台</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">工作内容(AI工具？表格文档？)</div>
+                    <div class="qa-answer">飞书文档处理居多。用ai的话用ds、kimi、豆包、即梦这些比较多</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">椅子放在哪里？（家？办公室？）</div>
+                    <div class="qa-answer">办公室。有升降桌</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">生活/工作节奏如何？用一些词来形容？
+工作强度？是否长期久坐？</div>
+                    <div class="qa-answer">基本早10晚7、8下班，强度还可以，但是上班时间基本都是久坐，每两小时起来一次。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">如果让你回想一个典型的工作日，从早上到晚上不同时间你在做什么？</div>
+                    <div class="qa-answer">早10：00上班-19：00多下班，下班去公司健身房锻炼30-40分钟，做有氧。然后回家做饭，他和对象都会交替坐。21：00多吃完饭。住1楼，会去家门口喂猫、出去逛，或者对象需要摄影给他打下手。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">周末会去干什么？兴趣爱好之类的？</div>
+                    <div class="qa-answer">ENFP；在家、和朋友出去</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">健身习惯？按摩习惯？</div>
+                    <div class="qa-answer">会去健身</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">当时为什么购买OC1？</div>
+                    <div class="qa-answer">【健康】腰突和骶髂发炎，疼的实在受不了想着换个椅子能缓解一些</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">购买前是否对比过其他产品？</div>
+                    <div class="qa-answer">抖音看到-b站做功课</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">OC1有什么不满意的，改进什么？</div>
+                    <div class="qa-answer">粘毛；使用脚踏会提到对面的人。45cm坐垫会有点短，但还行能接受不是大问题。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">OC1主要在什么场景下使用？平均每天用多久？</div>
+                    <div class="qa-answer">办公时间都在用</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">您在家休闲时，通常喜欢做什么？在什么位置进行？（周末和工作日有不同吗？）</div>
+                    <div class="qa-answer">会愿意躺着刷刷手机</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在家休闲时，您更常用哪种设备？（手机/平板/电脑/电视）</div>
+                    <div class="qa-answer">就用手机，偶尔看电视</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">你在放松完全不要工作的时刻会怎么坐？</div>
+                    <div class="qa-answer">躺着-床上</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">标签</div>
+                    <div class="qa-answer">病痛/猫毛/工作不卷</div>
+                </div>
+            </div>
+        </div>
+        <div class="interview-card">
+            <div class="interview-header">
+                <span class="interview-badge girl">G2</span>
+                <span class="interview-role"></span>
+            </div>
+            <div class="interview-meta">
+                <div class="meta-item"><span class="meta-label">编号</span><span class="meta-value">2</span></div><div class="meta-item"><span class="meta-label">性别</span><span class="meta-value">女</span></div><div class="meta-item"><span class="meta-label">年龄</span><span class="meta-value">36</span></div><div class="meta-item"><span class="meta-label">身高体重</span><span class="meta-value">166/54kg</span></div><div class="meta-item"><span class="meta-label">访谈时间</span><span class="meta-value">0129-17点-18点</span></div><div class="meta-item"><span class="meta-label">手机号</span><span class="meta-value">18100733032</span></div>
+            </div>
+            <div class="interview-qa">
+                
+                <div class="qa-item">
+                    <div class="qa-question">居住地</div>
+                    <div class="qa-answer">湖南-长沙</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">工作内容(AI工具？表格文档？)</div>
+                    <div class="qa-answer">国企市场部门，实际从事内勤工作，为跑市场的同事处理内部管理流程等事务</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">椅子放在哪里？（家？办公室？）</div>
+                    <div class="qa-answer">家里-书房/电竞房/功能房</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">生活/工作节奏如何？用一些词来形容？
+工作强度？是否长期久坐？</div>
+                    <div class="qa-answer">工作节奏平稳，国企内勤工作。
+长期久坐玩游戏，工作日玩游戏 2-3 小时，周末可达 7-10 小时</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">如果让你回想一个典型的工作日，从早上到晚上不同时间你在做什么？</div>
+                    <div class="qa-answer">工作日 ：正常到公司上班，下班回家后玩游戏 2-3 小时（非每天。
+注重养生，10 点前躺下休息，保证 8-9 小时睡眠。
+周末 ：以玩游戏为主，累计7-10 小时，穿插休息与躺桩运动</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">周末会去干什么？兴趣爱好之类的？</div>
+                    <div class="qa-answer">玩游戏偏好 Steam 3A 游戏（如《哈迪斯》《博德之门 3》）、种田类游戏（如《星露谷》）及休闲网游（如《无限暖暖》）。
+养娃：收集有IP棉花娃娃（如罗小白），搭配衣服并带出门拍照。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">健身习惯？按摩习惯？</div>
+                    <div class="qa-answer">身体允许时进行躺桩运动</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">当时为什么购买OC1？</div>
+                    <div class="qa-answer">在购置桌子支架的时候看到b站广告</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">购买前是否对比过其他产品？</div>
+                    <div class="qa-answer">搜过女生人体工学椅</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">OC1有什么不满意的，改进什么？</div>
+                    <div class="qa-answer">1）二档到三档下降幅度太大，需增加 1-3 档间调节选项；2)腰支撑对骨盆与腰连接部位支撑不足，每次换挡需调整顶腰。3)脚踏高度 ：现有脚踏 + 增高模块仍不够高</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">OC1主要在什么场景下使用？平均每天用多久？</div>
+                    <div class="qa-answer">玩游戏</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">有没有哪些姿势或场景，是OC1无法满足的？（盘腿？）</div>
+                    <div class="qa-answer">盘腿空间小一点但也能盘。默认坐高导致脚无法踩实泡脚桶</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在家休闲时，您更常用哪种设备？（手机/平板/电脑/电视）</div>
+                    <div class="qa-answer">电脑 ：主要设备，用于玩游戏、看纪录片； 32 寸悬臂支架屏幕 + OC1 椅子</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">你在放松完全不要工作的时刻会怎么坐？</div>
+                    <div class="qa-answer">有好多个地方可以躺</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">标签</div>
+                    <div class="qa-answer">游戏/独身/“厌男小女权”/身弱/养生/国企/不卷/功课参数党/爱干净/可爱风</div>
+                </div>
+            </div>
+        </div>
+        <div class="interview-card">
+            <div class="interview-header">
+                <span class="interview-badge girl">G3</span>
+                <span class="interview-role"></span>
+            </div>
+            <div class="interview-meta">
+                <div class="meta-item"><span class="meta-label">编号</span><span class="meta-value">3</span></div><div class="meta-item"><span class="meta-label">姓名</span><span class="meta-value">没开视频</span></div><div class="meta-item"><span class="meta-label">性别</span><span class="meta-value">女</span></div><div class="meta-item"><span class="meta-label">年龄</span><span class="meta-value">31-35</span></div><div class="meta-item"><span class="meta-label">身高体重</span><span class="meta-value">163/53kg</span></div><div class="meta-item"><span class="meta-label">访谈时间</span><span class="meta-value">0130-11点-12点</span></div><div class="meta-item"><span class="meta-label">手机号</span><span class="meta-value">18123669348</span></div>
+            </div>
+            <div class="interview-qa">
+                
+                <div class="qa-item">
+                    <div class="qa-question">居住地</div>
+                    <div class="qa-answer">深圳-福田</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">工作内容(AI工具？表格文档？)</div>
+                    <div class="qa-answer">处理 Excel 数据、与客户沟通</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">椅子放在哪里？（家？办公室？）</div>
+                    <div class="qa-answer">办公室</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">生活/工作节奏如何？用一些词来形容？
+工作强度？是否长期久坐？</div>
+                    <div class="qa-answer">工作时间从下午到晚上九十点，回家还有通勤，休息较晚12点1点这样。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">如果让你回想一个典型的工作日，从早上到晚上不同时间你在做什么？</div>
+                    <div class="qa-answer">中午出发去公司，先吃饭，然后饭后散步，下午到晚上九十点工作，下班后通勤，回家休息较晚</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">周末会去干什么？兴趣爱好之类的？</div>
+                    <div class="qa-answer">倾向于外出</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">健身习惯？按摩习惯？</div>
+                    <div class="qa-answer">在家做哑铃、壶铃等力量训练；有按摩、spa习惯之前频率很高，有空就去，但后面有一次按摩完颈部不适也了解了按摩手法可能导致损失就减少了。但是买了很多家用按摩器，比如倍轻松的按肩胛骨的、阿童木泡脚桶</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">当时为什么购买OC1？</div>
+                    <div class="qa-answer">陪父亲去看的，但是父亲不喜欢自己又不想错过好产品，旧椅不适，被我们的椅子腰部支撑功能吸引</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">购买前是否对比过其他产品？</div>
+                    <div class="qa-answer">自己是工学椅老用户了，</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">OC1有什么不满意的，改进什么？</div>
+                    <div class="qa-answer">1）购买的 48椅子头枕无法支撑脖子，更换 45 尺寸头枕后舒适度提升
+2）调节过程繁琐：缺乏明确指导，不清楚先调桌面、手托还是座椅，导致调节过程漫长且反复
+3）轮子过滑问题</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">您在家休闲时，通常喜欢做什么？在什么位置进行？（周末和工作日有不同吗？）</div>
+                    <div class="qa-answer">工作日晚上换地方吃饭；周末外出游玩；在家用平板看剧、电影，主要在餐桌上</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在家休闲时，您更常用哪种设备？（手机/平板/电脑/电视）</div>
+                    <div class="qa-answer">平板比较多</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">你在放松完全不要工作的时刻会怎么坐？</div>
+                    <div class="qa-answer">也会盘腿</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">标签</div>
+                    <div class="qa-answer">小老板/人体工学全套接纳/悦己/养生-泡脚/按摩热敷/工作自由</div>
+                </div>
+            </div>
+        </div>
+        <div class="interview-card">
+            <div class="interview-header">
+                <span class="interview-badge girl">G4</span>
+                <span class="interview-role"></span>
+            </div>
+            <div class="interview-meta">
+                <div class="meta-item"><span class="meta-label">编号</span><span class="meta-value">4</span></div><div class="meta-item"><span class="meta-label">姓名</span><span class="meta-value">忘记录制</span></div><div class="meta-item"><span class="meta-label">性别</span><span class="meta-value">女</span></div><div class="meta-item"><span class="meta-label">年龄</span><span class="meta-value">26~30</span></div><div class="meta-item"><span class="meta-label">身高体重</span><span class="meta-value">166/60kg</span></div><div class="meta-item"><span class="meta-label">访谈时间</span><span class="meta-value">0130-16-17点</span></div><div class="meta-item"><span class="meta-label">手机号</span><span class="meta-value">15011506725</span></div>
+            </div>
+            <div class="interview-qa">
+                
+                <div class="qa-item">
+                    <div class="qa-question">居住地</div>
+                    <div class="qa-answer">北京朝阳</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">工作内容(AI工具？表格文档？)</div>
+                    <div class="qa-answer">处理表格多一些，更多是浏览</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">椅子放在哪里？（家？办公室？）</div>
+                    <div class="qa-answer">家里-书房</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">生活/工作节奏如何？用一些词来形容？
+工作强度？是否长期久坐？</div>
+                    <div class="qa-answer">还可以，基本不加班</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">如果让你回想一个典型的工作日，从早上到晚上不同时间你在做什么？</div>
+                    <div class="qa-answer">一周有2天在家办公，3天在公司。上班时间为 9 点到 9 点半，下班时间为 6 点到 6 点半</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">健身习惯？按摩习惯？</div>
+                    <div class="qa-answer">每周都会去，去理疗医院推拿</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">当时为什么购买OC1？</div>
+                    <div class="qa-answer">刚搬家设计书房，且自身腰有损伤（腰间盘膨出），普通椅子不舒服，经朋友推荐并线下体验后购买。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">购买前是否对比过其他产品？</div>
+                    <div class="qa-answer">有对比，但是线下体验觉得西昊和黑白调只有腰部支撑，背部支撑不足</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">OC1有什么不满意的，改进什么？</div>
+                    <div class="qa-answer">为什么买48-身高166.
+座椅记忆？
+电机坏的风险增加了？5年质保能消解。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">OC1主要在什么场景下使用？平均每天用多久？</div>
+                    <div class="qa-answer">在家办公就是8小时，在司办公就是2-3小时。下班回家后会在椅子上复盘基金、股票行情，玩小游戏、与 DeepSeek 聊天</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">有没有哪些姿势或场景，是OC1无法满足的？（盘腿？）</div>
+                    <div class="qa-answer">会盘腿。能接受</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">您在家休闲时，通常喜欢做什么？在什么位置进行？（周末和工作日有不同吗？）</div>
+                    <div class="qa-answer">刷剧、看视频会在沙发上进行</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">标签</div>
+                    <div class="qa-answer">混合办公/新家/功课党/工作不卷/财务/怕脏-买椅套/</div>
+                </div>
+            </div>
+        </div>
+        <div class="interview-card">
+            <div class="interview-header">
+                <span class="interview-badge girl">G5</span>
+                <span class="interview-role"></span>
+            </div>
+            <div class="interview-meta">
+                <div class="meta-item"><span class="meta-label">编号</span><span class="meta-value">5</span></div><div class="meta-item"><span class="meta-label">性别</span><span class="meta-value">女</span></div><div class="meta-item"><span class="meta-label">年龄</span><span class="meta-value">50岁（60退休，延迟退休）</span></div><div class="meta-item"><span class="meta-label">身高体重</span><span class="meta-value">160/57kg</span></div><div class="meta-item"><span class="meta-label">访谈时间</span><span class="meta-value">0202-18-19点</span></div><div class="meta-item"><span class="meta-label">手机号</span><span class="meta-value">13920340567</span></div>
+            </div>
+            <div class="interview-qa">
+                
+                <div class="qa-item">
+                    <div class="qa-question">居住地</div>
+                    <div class="qa-answer">天津-南开区</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">工作内容(AI工具？表格文档？)</div>
+                    <div class="qa-answer">文字的内容多一些；多为浏览文档。键盘输入时间较少。
+使用 AI 工具 （如 DeepSeek 元宝、阿里千问、豆包）辅助生成文稿，会交叉使用验证准确性</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">椅子放在哪里？（家？办公室？）</div>
+                    <div class="qa-answer">办公室</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">生活/工作节奏如何？用一些词来形容？
+工作强度？是否长期久坐？</div>
+                    <div class="qa-answer">阶段性忙碌（年底年初较忙）。生活节奏 ：规律且充实（注重健康管理、运动、学习）</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">如果让你回想一个典型的工作日，从早上到晚上不同时间你在做什么？</div>
+                    <div class="qa-answer">需长时间久坐，上班时间（8:30-17:00）除午休、上厕所和喝水外基本久坐。
+8:30-17:00 ：办公室处理文档、浏览网页，使用两台电脑（内网 + 外网），中午午休 1.5 小时。
+下班后 ：晚饭后散步或居家运动（拉伸、力量训练），听书、关注股市资讯或学英语</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">周末会去干什么？兴趣爱好之类的？</div>
+                    <div class="qa-answer">陪回国实习的孩子做饭、逛街，或读书、看展；计划后面用女儿买的相机 “扫街” 拍摄</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">健身习惯？按摩习惯？</div>
+                    <div class="qa-answer">按摩推拿（每周一次全身按摩1小时）、会买保健品；</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">当时为什么购买OC1？</div>
+                    <div class="qa-answer">被背部贴合吸引，旧工学椅（网易严选）姿势改变后腰部支撑不足。
+作为新年和生日礼物，且5年质保可使用至退休。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">购买前是否对比过其他产品？</div>
+                    <div class="qa-answer">网易严选</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">OC1有什么不满意的，改进什么？</div>
+                    <div class="qa-answer">希望有座套，和脚垫套，考虑清洁问题。推荐给了同事。也有这样的困扰。椅子很舒服，反而导致久坐。希望有久坐提醒。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">OC1主要在什么场景下使用？平均每天用多久？</div>
+                    <div class="qa-answer">日常办公</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">您在家休闲时，通常喜欢做什么？在什么位置进行？（周末和工作日有不同吗？）</div>
+                    <div class="qa-answer">周末，跑步、做饭、看电影。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在家休闲时，您更常用哪种设备？（手机/平板/电脑/电视）</div>
+                    <div class="qa-answer">手机 （看 / 听书、直播讲座、学英语）</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">标签</div>
+                    <div class="qa-answer">50岁办公室/事业单位-低调/悦己/持续学习，学英语、金融、AI/</div>
+                </div>
+            </div>
+        </div>
+        <div class="interview-card">
+            <div class="interview-header">
+                <span class="interview-badge girl">G6</span>
+                <span class="interview-role"></span>
+            </div>
+            <div class="interview-meta">
+                <div class="meta-item"><span class="meta-label">编号</span><span class="meta-value">6</span></div><div class="meta-item"><span class="meta-label">性别</span><span class="meta-value">女</span></div><div class="meta-item"><span class="meta-label">年龄</span><span class="meta-value">46~50</span></div><div class="meta-item"><span class="meta-label">身高体重</span><span class="meta-value">166/60kg</span></div><div class="meta-item"><span class="meta-label">访谈时间</span><span class="meta-value">0204-11-12点</span></div><div class="meta-item"><span class="meta-label">手机号</span><span class="meta-value">13818931527</span></div>
+            </div>
+            <div class="interview-qa">
+                
+                <div class="qa-item">
+                    <div class="qa-question">居住地</div>
+                    <div class="qa-answer">上海浦东</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">工作内容(AI工具？表格文档？)</div>
+                    <div class="qa-answer">行政工作，会使用电脑（台式机、笔记本）处理事务。公司20多个人</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">椅子放在哪里？（家？办公室？）</div>
+                    <div class="qa-answer">办公室</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">生活/工作节奏如何？用一些词来形容？
+工作强度？是否长期久坐？</div>
+                    <div class="qa-answer">久坐、时间长；充实；上班时间早九晚六。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">如果让你回想一个典型的工作日，从早上到晚上不同时间你在做什么？</div>
+                    <div class="qa-answer">7点多就起，起来收拾然后通勤去公司。坐地铁路上会听财经类直播
+为错峰可能 9 点半到。白天：在办公室久坐办公，使用电脑处理行政工作。晚上6 点半下班，坐地铁回家约 7 点半，之后刷视频号学习、处理家务等，10 点、11 点左右休息。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">周末会去干什么？兴趣爱好之类的？</div>
+                    <div class="qa-answer">去父母家、在家收拾家务、补酥梨的内部课、看直播回放、去健身房快走、参加苏黎的线下课
+兴趣爱好：刷视频号（金融底层逻辑、国际形势分析等内容）、研究金融、学习 ETF 等金融知识</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">健身习惯？按摩习惯？</div>
+                    <div class="qa-answer">健身习惯：一周两到三次去连锁健身房快走，每次半小时，坡度调 10、速度 5
+按摩习惯：会按摩，但没有固定频率，不是一直去按</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">当时为什么购买OC1？</div>
+                    <div class="qa-answer">【KOL推荐】是酥梨的粉丝，信任其推荐，自身办公时间长，为改善办公环境，自费购买</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">购买前是否对比过其他产品？</div>
+                    <div class="qa-answer">没有，没时间调研其他椅子</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">OC1有什么不满意的，改进什么？</div>
+                    <div class="qa-answer">不满意：头枕只能枕在后脑勺，未实现贴合颈部的功能；腰靠只能前后调节，需要上下调节
+改进建议：头枕希望能贴合颈部；腰靠增加上下调节功能；针对单独功能制作小视频方便用户学习；在椅子按钮旁贴功能贴纸</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">OC1主要在什么场景下使用？平均每天用多久？</div>
+                    <div class="qa-answer">办公场景，平均每天使用约 9 小时</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">您在家休闲时，通常喜欢做什么？在什么位置进行？（周末和工作日有不同吗？）</div>
+                    <div class="qa-answer">在家休闲时刷视频号、处理家务，位置不固定，人到哪里手机到哪里；周末可能去父母家或参加线下课，与工作日在家休闲活动类似</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在家休闲时，您更常用哪种设备？（手机/平板/电脑/电视）</div>
+                    <div class="qa-answer">手机</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">标签</div>
+                    <div class="qa-answer">KOL信任/翡翠/行政/高自主学习</div>
+                </div>
+            </div>
+        </div>
+        <div class="interview-card">
+            <div class="interview-header">
+                <span class="interview-badge girl">G7</span>
+                <span class="interview-role"></span>
+            </div>
+            <div class="interview-meta">
+                <div class="meta-item"><span class="meta-label">编号</span><span class="meta-value">7</span></div><div class="meta-item"><span class="meta-label">性别</span><span class="meta-value">女</span></div><div class="meta-item"><span class="meta-label">年龄</span><span class="meta-value">36~40</span></div><div class="meta-item"><span class="meta-label">身高体重</span><span class="meta-value">163/54kg</span></div><div class="meta-item"><span class="meta-label">月收入</span><span class="meta-value">30,000-39,999元</span></div><div class="meta-item"><span class="meta-label">访谈时间</span><span class="meta-value">0205-15-16点</span></div><div class="meta-item"><span class="meta-label">手机号</span><span class="meta-value">13588298416</span></div>
+            </div>
+            <div class="interview-qa">
+                
+                <div class="qa-item">
+                    <div class="qa-question">居住地</div>
+                    <div class="qa-answer">浙江杭州</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">工作内容(AI工具？表格文档？)</div>
+                    <div class="qa-answer">ppt多和 CAD 软件，处理图形类工作较多，包括设计方案沟通、优化方向确认等</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">椅子放在哪里？（家？办公室？）</div>
+                    <div class="qa-answer">办公室</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">生活/工作节奏如何？用一些词来形容？
+工作强度？是否长期久坐？</div>
+                    <div class="qa-answer">工作时间长，加班频繁（去年忙时加班至十一二点，最近为七八点）</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">如果让你回想一个典型的工作日，从早上到晚上不同时间你在做什么？</div>
+                    <div class="qa-answer">上午 9 点 到岗开始工作，开车通勤，距离2公里，开车5分钟。
+上班主要都是坐着。这段时间因腰肌劳损会刻意起身走动。
+晚上：加班至七八点（忙时十一二点），下班后回家带娃</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">周末会去干什么？兴趣爱好之类的？</div>
+                    <div class="qa-answer">补觉；约孩子的小朋友去公园游玩。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">健身习惯？按摩习惯？</div>
+                    <div class="qa-answer">快走（使用家用跑步机）、偶尔打羽毛球（因搭子生病近期较少）
+每周一次商业按摩，办有年卡；购买过倍轻松兰博基尼腰部按摩仪（1900 元左右）和眼部按摩仪（2000 元不到）</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">当时为什么购买OC1？</div>
+                    <div class="qa-answer">【健康】同事推荐，试用后觉得腰支撑功能 能缓解腰肌劳损，当时正处于腰疼发作期</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">购买前是否对比过其他产品？</div>
+                    <div class="qa-answer">没有对比过</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">OC1有什么不满意的，改进什么？</div>
+                    <div class="qa-answer">无法挂衣物 ：椅背上无法披大衣或放置毯子，建议增加衣架配件
+腰靠记忆功能 ：误以为腰靠会自动复位（实际为误触按摩功能导致</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">OC1主要在什么场景下使用？平均每天用多久？</div>
+                    <div class="qa-answer">每天久坐多久。上午九点，最近七八点。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">您在家休闲时，通常喜欢做什么？在什么位置进行？（周末和工作日有不同吗？）</div>
+                    <div class="qa-answer">周末去</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">标签</div>
+                    <div class="qa-answer">加班/设计/效率/宝妈</div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <div id="tab-green" class="tab-content">
+        <div class="interviews-grid">
+
+        <div class="interview-card">
+            <div class="interview-header">
+                <span class="interview-badge green">S1</span>
+                <span class="interview-role"></span>
+            </div>
+            <div class="interview-meta">
+                <div class="meta-item"><span class="meta-label">姓名</span><span class="meta-value">高居航</span></div><div class="meta-item"><span class="meta-label">性别</span><span class="meta-value">男</span></div><div class="meta-item"><span class="meta-label">年龄</span><span class="meta-value">32岁</span></div><div class="meta-item"><span class="meta-label">访谈时间</span><span class="meta-value">1月6日 10:30-11:30</span></div>
+            </div>
+            <div class="interview-qa">
+                
+                <div class="qa-item">
+                    <div class="qa-question">居住地</div>
+                    <div class="qa-answer">北京市通州区通典铭居 E 座 1603 室 家</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">椅子放在哪里？（家？办公室？）</div>
+                    <div class="qa-answer">家。在家办公的时间。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">生活/工作节奏如何？
+如果用一些词来形容自己的生活，你会如何形容？</div>
+                    <div class="qa-answer">工作很紧张，有一半时间解决问题，加班。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在购买这把椅子之前，您使用的是什么椅子？使用了多久？</div>
+                    <div class="qa-answer">17年买的京东京造，用了5年，500块买的。那时候刚上班觉得很贵了，简单的升降，可以躺平但是不稳定。腿喜欢翘在。在宜家买了躺椅。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">当时促使您想要换掉旧椅子的最主要原因是什么？（如：旧椅子坏了，久坐不适、腰部问题、居家办公升级、装修换代等）</div>
+                    <div class="qa-answer">在招商银行的椅子拘束着。契机。颈椎不舒服。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">换椅子有一个大概的预算范围吗？为什么是这个范围？</div>
+                    <div class="qa-answer">没有预算。3千左右。不超过5千。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在最终决定购买这款椅子之前，您还考虑过哪些其他品牌或型号？（请务必追问出具体品牌和型号）</div>
+                    <div class="qa-answer">有关注黑白调和赫曼米勒。但都觉得没有解决他的支撑性需求</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">您是如何在这几个选择之间进行对比和权衡的？最关注哪几个方面？（如：价格、腰背支撑感、可调节性、外观颜值、品牌信誉、面料材质等）请对每个关注点详细说明。</div>
+                    <div class="qa-answer">腰背支撑感</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">新椅子哪个点让你觉得“就是它了”？（追问决定性因素）</div>
+                    <div class="qa-answer">腰部支撑</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">换新椅子后您最明显的感受是什么？和之前有什么不同？</div>
+                    <div class="qa-answer">很舒服。腰部和头枕都有支撑。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">1、如果我们没有绿色款的椅子，你会买黑白吗？
+2、如果我们没有绿色的椅子，但是除了黑白有其他彩色（黄、红、蓝）你会买黑白还是彩色？</div>
+                    <div class="qa-answer">1、会，黑色的，耐脏
+2、需要看具体的，比如咱们这个是暗绿我买了，如果是那种亮绿我也可能会选黑白</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">颜色：除了现有的颜色，您还希望看到哪些新的颜色或配色方案？（例如，更沉稳的莫兰迪色、更活泼的亮色、或其他材质质感如牛仔布纹）</div>
+                    <div class="qa-answer">胡桃木，餐边柜。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">您每天大概会在这把椅子上坐多久？主要用它来做什么？（如：办公、打游戏、阅读、休息）</div>
+                    <div class="qa-answer">工作日下班4个小时左右，周末也用。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在您当前的使用过程中，有没有发现一些不够满意或者觉得可以改进的地方？</div>
+                    <div class="qa-answer">价格贵，</div>
+                </div>
+            </div>
+        </div>
+        <div class="interview-card">
+            <div class="interview-header">
+                <span class="interview-badge green">S2</span>
+                <span class="interview-role"></span>
+            </div>
+            <div class="interview-meta">
+                <div class="meta-item"><span class="meta-label">姓名</span><span class="meta-value">白羊羊</span></div><div class="meta-item"><span class="meta-label">性别</span><span class="meta-value">女</span></div><div class="meta-item"><span class="meta-label">年龄</span><span class="meta-value">30+岁</span></div><div class="meta-item"><span class="meta-label">身高体重</span><span class="meta-value">身高165cm，体重106kg</span></div><div class="meta-item"><span class="meta-label">访谈时间</span><span class="meta-value">1月6日 14:00-15:00</span></div>
+            </div>
+            <div class="interview-qa">
+                
+                <div class="qa-item">
+                    <div class="qa-question">居住地</div>
+                    <div class="qa-answer">深圳前海，合租两房一厅，70平。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">椅子放在哪里？（家？办公室？）</div>
+                    <div class="qa-answer">公司用</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">生活/工作节奏如何？
+如果用一些词来形容自己的生活，你会如何形容？</div>
+                    <div class="qa-answer">工作和生活都很充实，每天工作 12 小时，下班后有打网球、拼图、线下看演出、追星等兴趣爱好。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在购买这把椅子之前，您使用的是什么椅子？使用了多久？</div>
+                    <div class="qa-answer">公司统一买的，但是花了400-500买了style艾尔牌子花瓣坐垫，很硬。也买了脚垫。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">当时促使您想要换掉旧椅子的最主要原因是什么？（如：旧椅子坏了，久坐不适、腰部问题、居家办公升级、装修换代等）</div>
+                    <div class="qa-answer">契机是腿麻，持续几个月。拍了片子是腰突。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">换椅子有一个大概的预算范围吗？为什么是这个范围？</div>
+                    <div class="qa-answer">预算在1500左右。但是去45up试了之后觉得1500左右的都不舒服。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在最终决定购买这款椅子之前，您还考虑过哪些其他品牌或型号？（请务必追问出具体品牌和型号）</div>
+                    <div class="qa-answer">西昊c200还是pro要2000出头，担心网格布坐久了会软塌。网易严选s9对网易品牌是比较信任。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">您是如何在这几个选择之间进行对比和权衡的？最关注哪几个方面？（如：价格、腰背支撑感、可调节性、外观颜值、品牌信誉、面料材质等）请对每个关注点详细说明。</div>
+                    <div class="qa-answer">重点关注腰部承托力，并且会跟随调整。坐深不能太短。坐的要舒服。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">新椅子哪个点让你觉得“就是它了”？（追问决定性因素）</div>
+                    <div class="qa-answer">整个腰部承托很舒服。在门店坐了48cm黑色的椅子，觉得海绵垫子很扎实。不会下滑</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">换新椅子后您最明显的感受是什么？和之前有什么不同？</div>
+                    <div class="qa-answer">躺着也很舒服，所以中午不睡午睡床了。而且站立办公的时间也减少了，因为坐着也比较舒服。（办公室使用，同事体验完称赞舒适并且外观高级，还有拉伸功能很不错）</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">1、如果我们没有绿色款的椅子，你会买黑白吗？
+2、如果我们没有绿色的椅子，但是除了黑白有其他彩色（黄、红、蓝）你会买黑白还是彩色？</div>
+                    <div class="qa-answer">1、会买白色或者有星舰色的话会考虑
+2、彩色（蓝色藏青那种也可以）</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">颜色：除了现有的颜色，您还希望看到哪些新的颜色或配色方案？（例如，更沉稳的莫兰迪色、更活泼的亮色、或其他材质质感如牛仔布纹）</div>
+                    <div class="qa-answer">实体店看到一个星舰色，没有绿色好看。希望推出更多好看的颜色，如兼顾耐脏和美观的颜色。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">面料：您对目前椅子的面料（透气性、触感、耐久度）有什么评价？未来如果推出其他面料（如更凉爽的网布、更亲肤的绒布、防水防污涂层等），您会有兴趣吗？</div>
+                    <div class="qa-answer">透气性和质感也不错。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">您每天大概会在这把椅子上坐多久？主要用它来做什么？（如：办公、打游戏、阅读、休息）</div>
+                    <div class="qa-answer">12个小时上班时间，用来工作</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在您当前的使用过程中，有没有发现一些不够满意或者觉得可以改进的地方？</div>
+                    <div class="qa-answer">1、按摩的时间需要设置。现在太短，期望10-15分钟。2、椅子轮子固定，现在过于丝滑。 3、椅背有点窄，午休手没地方放。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">抛开现有技术和价格，你梦想中的椅子是什么样的？【追问原因】</div>
+                    <div class="qa-answer">包裹性，支撑性。什么姿势都能适配，自动包裹住。</div>
+                </div>
+            </div>
+        </div>
+        <div class="interview-card">
+            <div class="interview-header">
+                <span class="interview-badge green">S3</span>
+                <span class="interview-role"></span>
+            </div>
+            <div class="interview-meta">
+                <div class="meta-item"><span class="meta-label">姓名</span><span class="meta-value">曾先生</span></div><div class="meta-item"><span class="meta-label">性别</span><span class="meta-value">男</span></div><div class="meta-item"><span class="meta-label">年龄</span><span class="meta-value">35岁</span></div><div class="meta-item"><span class="meta-label">身高体重</span><span class="meta-value">170cm，65kg</span></div><div class="meta-item"><span class="meta-label">访谈时间</span><span class="meta-value">1月6日 16:00-17:00</span></div>
+            </div>
+            <div class="interview-qa">
+                
+                <div class="qa-item">
+                    <div class="qa-question">居住地</div>
+                    <div class="qa-answer">广州，自己的房子</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">椅子放在哪里？（家？办公室？）</div>
+                    <div class="qa-answer">3房一厅，晚上会使用</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">生活/工作节奏如何？
+如果用一些词来形容自己的生活，你会如何形容？</div>
+                    <div class="qa-answer">工作：反复和有计划性，工作比较忙；生活：比较零碎</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在购买这把椅子之前，您使用的是什么椅子？使用了多久？</div>
+                    <div class="qa-answer">之前书房放的就是普通的椅子，去年10月入住新房就想买但是书房使用频率不高而且没有合适的椅子就没买。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">当时促使您想要换掉旧椅子的最主要原因是什么？（如：旧椅子坏了，久坐不适、腰部问题、居家办公升级、装修换代等）</div>
+                    <div class="qa-answer">表弟众筹的时候买来一把灰色的，12月去他家的时候体验了觉得坐感不错就决定买。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">换椅子有一个大概的预算范围吗？为什么是这个范围？</div>
+                    <div class="qa-answer">4000元以下可以，预算没有很死，重点是要舒服合适。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在最终决定购买这款椅子之前，您还考虑过哪些其他品牌或型号？（请务必追问出具体品牌和型号）</div>
+                    <div class="qa-answer">永艺550，一直收藏夹吃灰。但是觉得跟办公室坐的差不多，就没有买。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">您是如何在这几个选择之间进行对比和权衡的？最关注哪几个方面？（如：价格、腰背支撑感、可调节性、外观颜值、品牌信誉、面料材质等）请对每个关注点详细说明。</div>
+                    <div class="qa-answer">还是要坐的舒适。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">新椅子哪个点让你觉得“就是它了”？（追问决定性因素）</div>
+                    <div class="qa-answer">跟其他的椅子都不一样，海绵比较舒服，还有背部的支撑很贴合。看上去很有科技感</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">换新椅子后您最明显的感受是什么？和之前有什么不同？</div>
+                    <div class="qa-answer">坐着很舒服。颜色也符合预期</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">1、如果我们没有绿色款的椅子，你会买黑白吗？
+2、如果我们没有绿色的椅子，但是除了黑白有其他彩色（黄、红、蓝）你会买黑白还是彩色？</div>
+                    <div class="qa-answer">1，会考虑黑色;
+2、彩色(红 蓝)</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">颜色：除了现有的颜色，您还希望看到哪些新的颜色或配色方案？（例如，更沉稳的莫兰迪色、更活泼的亮色、或其他材质质感如牛仔布纹）</div>
+                    <div class="qa-answer">沙发是灰色的。可能出棕色的也能比较好适配家庭环境。家里仅有的绿色是龟背竹，放在客厅。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">面料：您对目前椅子的面料（透气性、触感、耐久度）有什么评价？未来如果推出其他面料（如更凉爽的网布、更亲肤的绒布、防水防污涂层等），您会有兴趣吗？</div>
+                    <div class="qa-answer">耐脏。但是担心夏天不透气会热</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">您每天大概会在这把椅子上坐多久？主要用它来做什么？（如：办公、打游戏、阅读、休息）</div>
+                    <div class="qa-answer">7-8点下班。饭后去椅子收集资料和观影2-3小时。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在您当前的使用过程中，有没有发现一些不够满意或者觉得可以改进的地方？</div>
+                    <div class="qa-answer">1、坐深在一档是够的，但是往下面档位的话会有点短。2、轮子支架是塑料的，担心会坏掉，或者脏了。3、扶手太顺滑了，躺下太滑。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">抛开现有技术和价格，你梦想中的椅子是什么样的？【追问原因】</div>
+                    <div class="qa-answer">坐下去有一种睡着床上的感觉，放松宁静。</div>
+                </div>
+            </div>
+        </div>
+        <div class="interview-card">
+            <div class="interview-header">
+                <span class="interview-badge green">S4</span>
+                <span class="interview-role"></span>
+            </div>
+            <div class="interview-meta">
+                <div class="meta-item"><span class="meta-label">姓名</span><span class="meta-value">颜俐</span></div><div class="meta-item"><span class="meta-label">性别</span><span class="meta-value">女</span></div><div class="meta-item"><span class="meta-label">年龄</span><span class="meta-value">35岁</span></div><div class="meta-item"><span class="meta-label">身高体重</span><span class="meta-value">156cm，62.6kg</span></div><div class="meta-item"><span class="meta-label">访谈时间</span><span class="meta-value">1月7日 10:00-11:00</span></div>
+            </div>
+            <div class="interview-qa">
+                
+                <div class="qa-item">
+                    <div class="qa-question">居住地</div>
+                    <div class="qa-answer">深圳坂田</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">椅子放在哪里？（家？办公室？）</div>
+                    <div class="qa-answer">家里书房</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">使用场景图片</div>
+                    <div class="qa-answer">出差中回家发</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">生活/工作节奏如何？
+如果用一些词来形容自己的生活，你会如何形容？</div>
+                    <div class="qa-answer">比较灵活。白天一般在外面，晚上回家。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在购买这把椅子之前，您使用的是什么椅子？使用了多久？</div>
+                    <div class="qa-answer">书房有两把椅子，一把西昊，24年搬家时买的。伴侣使用。镂空网面。比较舒适通风。另一把自己淘宝买的200多，普通椅子，没有轮子。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">当时促使您想要换掉旧椅子的最主要原因是什么？（如：旧椅子坏了，久坐不适、腰部问题、居家办公升级、装修换代等）</div>
+                    <div class="qa-answer">自己一直想买工学椅但是没有合适的，旧椅子腰靠和头枕都不舒服，而且没有轮子不方便移动。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">换椅子有一个大概的预算范围吗？为什么是这个范围？</div>
+                    <div class="qa-answer">没有预算，当时西昊2000出头买的。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在最终决定购买这款椅子之前，您还考虑过哪些其他品牌或型号？（请务必追问出具体品牌和型号）</div>
+                    <div class="qa-answer">看过西昊的都不喜欢，身高不高，那些椅子坐着不舒服</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">您是如何在这几个选择之间进行对比和权衡的？最关注哪几个方面？（如：价格、腰背支撑感、可调节性、外观颜值、品牌信誉、面料材质等）请对每个关注点详细说明。</div>
+                    <div class="qa-answer">腰背支撑性，坐的舒服</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">新椅子哪个点让你觉得“就是它了”？（追问决定性因素）</div>
+                    <div class="qa-answer">绿色很特别，加上自己喜欢绿色，在智能椅子里很少见。也体验了坐感很舒服。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">换新椅子后您最明显的感受是什么？和之前有什么不同？</div>
+                    <div class="qa-answer">贴合感。自如（不需要留意坐姿这个事情）椅子适应性强。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">1、如果我们没有绿色款的椅子，你会买黑白吗？
+2、如果我们没有绿色的椅子，但是除了黑白有其他彩色（黄、红、蓝）你会买黑白还是彩色？</div>
+                    <div class="qa-answer">1. 我大概率不会，但我伴侣说他送人的话也会买；
+2. 会买彩色。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">颜色：除了现有的颜色，您还希望看到哪些新的颜色或配色方案？（例如，更沉稳的莫兰迪色、更活泼的亮色、或其他材质质感如牛仔布纹）</div>
+                    <div class="qa-answer">觉得不用太多颜色</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">您每天大概会在这把椅子上坐多久？主要用它来做什么？（如：办公、打游戏、阅读、休息）</div>
+                    <div class="qa-answer">晚上2-3小时</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在您当前的使用过程中，有没有发现一些不够满意或者觉得可以改进的地方？</div>
+                    <div class="qa-answer">1、觉得自己身高不高，头枕位置不贴合，能接受不算什么大问题</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">关于椅子的使用，还有什么是我没有问到但是您觉得重要的？</div>
+                    <div class="qa-answer">喜欢清闲的点：不是订阅产品但是有定期用户关怀，天气冷送一个毯子</div>
+                </div>
+            </div>
+        </div>
+        <div class="interview-card">
+            <div class="interview-header">
+                <span class="interview-badge green">S5</span>
+                <span class="interview-role"></span>
+            </div>
+            <div class="interview-meta">
+                <div class="meta-item"><span class="meta-label">姓名</span><span class="meta-value">吴先生</span></div><div class="meta-item"><span class="meta-label">性别</span><span class="meta-value">男</span></div><div class="meta-item"><span class="meta-label">年龄</span><span class="meta-value">32岁</span></div><div class="meta-item"><span class="meta-label">身高体重</span><span class="meta-value">175cm 155斤</span></div><div class="meta-item"><span class="meta-label">访谈时间</span><span class="meta-value">1月7日 15:00-16:00</span></div>
+            </div>
+            <div class="interview-qa">
+                
+                <div class="qa-item">
+                    <div class="qa-question">居住地</div>
+                    <div class="qa-answer">深圳后海</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">椅子放在哪里？（家？办公室？）</div>
+                    <div class="qa-answer">办公室</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">生活/工作节奏如何？
+如果用一些词来形容自己的生活，你会如何形容？</div>
+                    <div class="qa-answer">工作不忙，还好，早九晚六</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在购买这把椅子之前，您使用的是什么椅子？使用了多久？</div>
+                    <div class="qa-answer">公司是统一配的。家里也有2000多的工学椅，好几年了。网状有点变形。坐感还可以。用了一年多。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">当时促使您想要换掉旧椅子的最主要原因是什么？（如：旧椅子坏了，久坐不适、腰部问题、居家办公升级、装修换代等）</div>
+                    <div class="qa-answer">在公司午睡放不下床，有一天睡椅子上起来腰很疼。就想买一张舒服的能躺下的椅子</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">换椅子有一个大概的预算范围吗？为什么是这个范围？</div>
+                    <div class="qa-answer">没有预算，3000+差不多能接受的上限，主要看舒适性。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在最终决定购买这款椅子之前，您还考虑过哪些其他品牌或型号？（请务必追问出具体品牌和型号）</div>
+                    <div class="qa-answer">没有对比</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">您是如何在这几个选择之间进行对比和权衡的？最关注哪几个方面？（如：价格、腰背支撑感、可调节性、外观颜值、品牌信誉、面料材质等）请对每个关注点详细说明。</div>
+                    <div class="qa-answer">主要是能躺倒比较舒服，然后电动调节很高级</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">新椅子哪个点让你觉得“就是它了”？（追问决定性因素）</div>
+                    <div class="qa-answer">1、背部曲线调档位是电动调节，很有仪式感很高级。2、有拉伸是加分项。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">换新椅子后您最明显的感受是什么？和之前有什么不同？</div>
+                    <div class="qa-answer">腰不疼了 ，中午躺卧休息时腰部不适感消失</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">1、你希望朋友和同事看到这把椅子时，对你产生什么印象？</div>
+                    <div class="qa-answer">追求个性但不张扬，不那么突出；椅子的高级感和设计感能反映自身对品质的注重，而非刻意展示给他人</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">1、如果我们没有绿色款的椅子，你会买黑白吗？
+2、如果我们没有绿色的椅子，但是除了黑白有其他彩色（黄、红、蓝）你会买黑白还是彩色？</div>
+                    <div class="qa-answer">1、会买，星舰色。黑色。白色不耐脏。
+2、太彩色就不行。绿色不那么艳丽，放家里会。亮绿也不要。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">您每天大概会在这把椅子上坐多久？主要用它来做什么？（如：办公、打游戏、阅读、休息）</div>
+                    <div class="qa-answer">8小时</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在您当前的使用过程中，有没有发现一些不够满意或者觉得可以改进的地方？</div>
+                    <div class="qa-answer">1、头枕不够往前。2、坐高想再低一点；3、调档位会晃4、头枕上下角度贴不了，贴不到后脑勺4、现在座椅比较大。坐垫加长一点点。48cm想长一点。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">抛开现有技术和价格，你梦想中的椅子是什么样的？【追问原因】</div>
+                    <div class="qa-answer">有按摩功能，多两个背带过来。会前申。做到汽车座椅的水平（通风和加热）。脚踏不能调节，想调矮一点。</div>
+                </div>
+            </div>
+        </div>
+        <div class="interview-card">
+            <div class="interview-header">
+                <span class="interview-badge green">S6</span>
+                <span class="interview-role"></span>
+            </div>
+            <div class="interview-meta">
+                <div class="meta-item"><span class="meta-label">姓名</span><span class="meta-value">吴生森</span></div><div class="meta-item"><span class="meta-label">性别</span><span class="meta-value">男</span></div><div class="meta-item"><span class="meta-label">年龄</span><span class="meta-value">28岁</span></div><div class="meta-item"><span class="meta-label">身高体重</span><span class="meta-value">173 75kg</span></div><div class="meta-item"><span class="meta-label">访谈时间</span><span class="meta-value">1月8日 17:00-18:00</span></div>
+            </div>
+            <div class="interview-qa">
+                
+                <div class="qa-item">
+                    <div class="qa-question">居住地</div>
+                    <div class="qa-answer">北京</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">椅子放在哪里？（家？办公室？）</div>
+                    <div class="qa-answer">家里书房</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">使用场景图片</div>
+                    <div class="qa-answer">出差中回家发</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">生活/工作节奏如何？
+如果用一些词来形容自己的生活，你会如何形容？</div>
+                    <div class="qa-answer">工作比较稳定，有加班，一般早上7-8点起床，起来会搞一些自己兴趣的代码工作1个多小时，然后再去上班。工作时间是10点半到21点，下班后回家会再搞2-3小时的兴趣或者看剧。工作之余，爱好是健身一周2-3次、爬山；自己组合电子产品。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在购买这把椅子之前，您使用的是什么椅子？使用了多久？</div>
+                    <div class="qa-answer">研究生时买的西昊，1000多。最近有点坏了，头枕被自己碰断了，坐垫网面比较塌。用了3年。觉得当时1000多算是中等花销，用3年还行。现在旧椅子也放书房，和清闲并排放。书房布局：10多平，有个衣柜。前面是一个升降桌1.7米✖️70cm。后面是一个书架，左边是窗户。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">当时促使您想要换掉旧椅子的最主要原因是什么？（如：旧椅子坏了，久坐不适、腰部问题、居家办公升级、装修换代等）</div>
+                    <div class="qa-answer">旧椅子没完全坏，但是坐着没有特别舒服，主要是头部和腰的舒适性不足。10月多想换。11月多去线下门店体验了，人体工学椅集合店。双十一过了。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">换椅子有一个大概的预算范围吗？为什么是这个范围？</div>
+                    <div class="qa-answer">4000以下都能接受</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在最终决定购买这款椅子之前，您还考虑过哪些其他品牌或型号？（请务必追问出具体品牌和型号）</div>
+                    <div class="qa-answer">西昊c300，2000-3000.西昊正着做的时候是舒服的，躺下腰是不舒服会悬空。
+体验完清闲的挺不错的。带电机的功能比较fancy。主要是调节腰部曲线。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">您是如何在这几个选择之间进行对比和权衡的？最关注哪几个方面？（如：价格、腰背支撑感、可调节性、外观颜值、品牌信誉、面料材质等）请对每个关注点详细说明。</div>
+                    <div class="qa-answer">腰部和头部的支撑性第一，舒适性》价格。可调节性反而不是特别关注，不经常调节。当时纠结西昊因为价格比清闲低，正做舒适度也可以，清闲差一点的是整体配件是塑料的，可能比较容易老化。而且没有扶手6d方向的调节</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">新椅子哪个点让你觉得“就是它了”？（追问决定性因素）</div>
+                    <div class="qa-answer">女朋友一起去的。销售说清闲用电机调背部曲线，两个人都会比较方便。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">换新椅子后您最明显的感受是什么？和之前有什么不同？</div>
+                    <div class="qa-answer">腰部支撑不管哪个角度都好。往后仰腰和头都支撑不错。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">1、你希望朋友和同事看到这把椅子时，对你产生什么印象？</div>
+                    <div class="qa-answer">觉得椅子特别。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">1、如果我们没有绿色款的椅子，你会买黑白吗？
+2、如果我们没有绿色的椅子，但是除了黑白有其他彩色（黄、红、蓝）你会买黑白还是彩色？</div>
+                    <div class="qa-answer">1、会买。黑的耐脏。
+2、不太确定。还是要看具体的颜色。自己衣服灰色黑白和军绿色裤子多一点。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">您每天大概会在这把椅子上坐多久？主要用它来做什么？（如：办公、打游戏、阅读、休息）</div>
+                    <div class="qa-answer">工作日2-3小时；周末4-5小时</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在您当前的使用过程中，有没有发现一些不够满意或者觉得可以改进的地方？</div>
+                    <div class="qa-answer">正坐，脖子支撑不好，行程不够。没有6d扶手。</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">抛开现有技术和价格，你梦想中的椅子是什么样的？【追问原因】</div>
+                    <div class="qa-answer">现在这个就很符合想象。电机贴合腰线。最最理性的是实时看整体的压强进行调节。头枕不是很智能。希望跟随。</div>
+                </div>
+            </div>
+        </div>
+        <div class="interview-card">
+            <div class="interview-header">
+                <span class="interview-badge green">S7</span>
+                <span class="interview-role"></span>
+            </div>
+            <div class="interview-meta">
+                <div class="meta-item"><span class="meta-label">姓名</span><span class="meta-value">张安博</span></div><div class="meta-item"><span class="meta-label">性别</span><span class="meta-value">女</span></div><div class="meta-item"><span class="meta-label">身高体重</span><span class="meta-value">52kg</span></div><div class="meta-item"><span class="meta-label">访谈时间</span><span class="meta-value">时间不行，文字简单聊</span></div>
+            </div>
+            <div class="interview-qa">
+                
+                <div class="qa-item">
+                    <div class="qa-question">居住地</div>
+                    <div class="qa-answer">深圳福田</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">当时促使您想要换掉旧椅子的最主要原因是什么？（如：旧椅子坏了，久坐不适、腰部问题、居家办公升级、装修换代等）</div>
+                    <div class="qa-answer">坐时间比较久，一直都用人体工学椅。 原来人体工学椅-保友金豪腰部支撑不够（还是需要垫枕头），不直接适配，颈椎部分支持更少；另外原来椅子比较低配，可个性化调整的东西不多</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">新椅子哪个点让你觉得“就是它了”？（追问决定性因素）</div>
+                    <div class="qa-answer">腰部支持足够</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">1、如果我们没有绿色款的椅子，你会买黑白吗？
+2、如果我们没有绿色的椅子，但是除了黑白有其他彩色（黄、红、蓝）你会买黑白还是彩色？</div>
+                    <div class="qa-answer">1、会买白色
+2、不太确定，看具体颜色。选白色也行</div>
+                </div>
+                <div class="qa-item">
+                    <div class="qa-question">在您当前的使用过程中，有没有发现一些不够满意或者觉得可以改进的地方？</div>
+                    <div class="qa-answer">1、4档有种压不到底，压不实的感觉，特别是对于小体重女生？（已经调松了力度），感觉躺下要隐隐用力。
+2、椅子的最低高度还是有点高，如果不是升降桌，对于部分桌子偏高，相当于如果不是看屏幕，而是伏案的话，不是最适配</div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>数据来源：清闲人体工学椅用户调研 | 14场深度访谈 | 2026年1月-2月</p>
+    </footer>
+</div>
+
+<script>
+function switchTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById('tab-' + tabId).classList.add('active');
+    event.target.classList.add('active');
+}
+</script>
+</body>
+</html>
