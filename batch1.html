@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第一批 - 清闲动态人机工学椅购后调研 - 清闲用户调研看板</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0A0E1A;
+            color: #E2E8F0;
+            overflow-x: hidden;
+        }
+        .bg-grid {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image:
+                linear-gradient(rgba(99, 101, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99, 101, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: 0;
+            animation: gridMove 20s linear infinite;
+        }
+        @keyframes gridMove { 0% { transform: translate(0, 0); } 100% { transform: translate(40px, 40px); } }
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 0;
+            animation: orbFloat 8s ease-in-out infinite;
+        }
+        .orb-1 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(99, 101, 255, 0.15), transparent); top: -100px; right: -100px; }
+        .orb-2 { width: 300px; height: 300px; background: radial-gradient(circle, rgba(232, 121, 249, 0.1), transparent); bottom: -50px; left: -50px; animation-delay: 2s; }
+        .orb-3 { width: 250px; height: 250px; background: radial-gradient(circle, rgba(34, 211, 238, 0.08), transparent); top: 50%; left: 50%; animation-delay: 4s; }
+        @keyframes orbFloat { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(30px, -20px) scale(1.1); } }
+        .glass-card {
+            background: rgba(15, 18, 35, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(99, 101, 255, 0.15);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            border-color: rgba(99, 101, 255, 0.3);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(99, 101, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        .kpi-card {
+            background: linear-gradient(135deg, rgba(99, 101, 255, 0.1), rgba(232, 121, 249, 0.05));
+            border: 1px solid rgba(99, 101, 255, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #6365FF, #E879F9, #22D3EE);
+        }
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #6365FF, #E879F9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .kpi-label {
+            font-size: 0.875rem;
+            color: #94A3B8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 4px;
+        }
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .section-icon {
+            width: 40px; height: 40px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.25rem;
+        }
+        .section-title { font-size: 1.25rem; font-weight: 600; color: #F1F5F9; }
+        .section-subtitle { font-size: 0.875rem; color: #64748B; }
+        .insight-box {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 211, 238, 0.05));
+            border-left: 3px solid #22C55E;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+        .insight-box h4 { color: #22C55E; font-size: 0.875rem; font-weight: 600; margin-bottom: 4px; }
+        .insight-box p { color: #94A3B8; font-size: 0.8125rem; line-height: 1.6; }
+        .chart-container { position: relative; height: 280px; width: 100%; }
+        .chart-container-sm { height: 220px; }
+        .bar-chart-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+        .bar-label { min-width: 100px; font-size: 0.75rem; color: #94A3B8; text-align: right; }
+        .bar-track {
+            flex: 1;
+            height: 24px;
+            background: rgba(30, 35, 60, 0.8);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+        .bar-fill {
+            height: 100%;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 8px;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            color: white;
+            transition: width 1s ease-out;
+            min-width: fit-content;
+        }
+        .bar-value { min-width: 50px; font-size: 0.75rem; color: #64748B; text-align: left; }
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+        .delay-5 { animation-delay: 0.5s; }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .badge-gradient { background: linear-gradient(135deg, rgba(99, 101, 255, 0.3), rgba(232, 121, 249, 0.2)); color: #C7D2FE; }
+        .tab-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            background: transparent;
+            color: #64748B;
+        }
+        .tab-btn.active { background: rgba(99, 101, 255, 0.2); color: #A5B4FC; }
+        .tab-btn:hover:not(.active) { color: #94A3B8; }
+        .question-card {
+            background: rgba(30, 35, 60, 0.5);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(99, 101, 255, 0.1);
+        }
+        .question-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #A5B4FC;
+            margin-bottom: 12px;
+        }
+        @media (max-width: 768px) {
+            .kpi-value { font-size: 1.75rem; }
+            .chart-container { height: 220px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-4 py-8">
+        <header class="mb-8 fade-in-up">
+            <div class="flex items-center gap-4">
+                <a href="清闲工学椅调研看板.html" class="text-slate-400 hover:text-white transition-colors" title="返回主看板">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                </a>
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-[#6365FF] to-[#E879F9] flex items-center justify-center text-xl">
+                    🪑
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-white">第一批 - 清闲动态人机工学椅购后调研</h1>
+                    <p class="text-sm text-slate-400 mt-1">基于 373 份有效问卷数据的深度分析</p>
+                </div>
+                <span class="ml-auto badge badge-gradient">第一批</span>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="kpi-card fade-in-up delay-1">
+                <div class="kpi-value">373</div>
+                <div class="kpi-label">本批次样本量</div>
+            </div>
+            <div class="kpi-card fade-in-up delay-2">
+                <div class="kpi-value">90.6%</div>
+                <div class="kpi-label">男性占比</div>
+            </div>
+            <div class="kpi-card fade-in-up delay-3">
+                <div class="kpi-value">79.9%</div>
+                <div class="kpi-label">26-40岁占比</div>
+            </div>
+            <div class="kpi-card fade-in-up delay-4">
+                <div class="kpi-value">6</div>
+                <div class="kpi-label">多选题数</div>
+            </div>
+        </div>
+
+        <!-- Row 1: Gender & Age -->
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+            <div class="glass-card p-6 fade-in-up delay-2">
+                <div class="section-header">
+                    <div class="section-icon" style="background: linear-gradient(135deg, rgba(99,101,255,0.2), rgba(232,121,249,0.1));">👥</div>
+                    <div>
+                        <div class="section-title">性别分布</div>
+                        <div class="section-subtitle">Gender Distribution</div>
+                    </div>
+                </div>
+                <div class="chart-container chart-container-sm">
+                    <canvas id="genderChart"></canvas>
+                </div>
+            </div>
+
+            <div class="glass-card p-6 fade-in-up delay-3">
+                <div class="section-header">
+                    <div class="section-icon" style="background: linear-gradient(135deg, rgba(34,211,238,0.2), rgba(34,197,94,0.1));">🎂</div>
+                    <div>
+                        <div class="section-title">年龄分布</div>
+                        <div class="section-subtitle">Age Distribution</div>
+                    </div>
+                </div>
+                <div class="chart-container chart-container-sm">
+                    <canvas id="ageChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 2: Province & Occupation -->
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+            <div class="glass-card p-6 fade-in-up delay-3">
+                <div class="section-header">
+                    <div class="section-icon" style="background: linear-gradient(135deg, rgba(251,146,60,0.2), rgba(239,68,68,0.1));">🗺️</div>
+                    <div>
+                        <div class="section-title">省份分布</div>
+                        <div class="section-subtitle">Geographic Distribution</div>
+                    </div>
+                </div>
+                <div id="provinceChart"></div>
+            </div>
+
+            <div class="glass-card p-6 fade-in-up delay-4">
+                <div class="section-header">
+                    <div class="section-icon" style="background: linear-gradient(135deg, rgba(168,85,247,0.2), rgba(232,121,249,0.1));">💼</div>
+                    <div>
+                        <div class="section-title">职业分布</div>
+                        <div class="section-subtitle">Occupation Distribution</div>
+                    </div>
+                </div>
+                <div id="occupationChart"></div>
+            </div>
+        </div>
+
+        <!-- Row 3: Body Metrics -->
+        <div class="grid md:grid-cols-3 gap-6 mb-6">
+            <div class="glass-card p-6 fade-in-up delay-4">
+                <div class="section-header">
+                    <div class="section-icon" style="background: linear-gradient(135deg, rgba(34,197,94,0.2), rgba(34,211,238,0.1));">📏</div>
+                    <div>
+                        <div class="section-title">身高分布</div>
+                        <div class="section-subtitle">Height Distribution (cm)</div>
+                    </div>
+                </div>
+                <div class="chart-container chart-container-sm">
+                    <canvas id="heightChart"></canvas>
+                </div>
+            </div>
+
+            <div class="glass-card p-6 fade-in-up delay-5">
+                <div class="section-header">
+                    <div class="section-icon" style="background: linear-gradient(135deg, rgba(251,146,60,0.2), rgba(239,68,68,0.1));">⚖️</div>
+                    <div>
+                        <div class="section-title">体重分布</div>
+                        <div class="section-subtitle">Weight Distribution (kg)</div>
+                    </div>
+                </div>
+                <div class="chart-container chart-container-sm">
+                    <canvas id="weightChart"></canvas>
+                </div>
+            </div>
+
+            <div class="glass-card p-6 fade-in-up delay-5">
+                <div class="section-header">
+                    <div class="section-icon" style="background: linear-gradient(135deg, rgba(232,121,249,0.2), rgba(99,101,255,0.1));">🏥</div>
+                    <div>
+                        <div class="section-title">BMI 分布</div>
+                        <div class="section-subtitle">BMI Categories</div>
+                    </div>
+                </div>
+                <div class="chart-container chart-container-sm">
+                    <canvas id="bmiChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 4: Multi-Select Questions -->
+        <div class="glass-card p-6 mb-6 fade-in-up delay-4">
+            <div class="section-header">
+                <div class="section-icon" style="background: linear-gradient(135deg, rgba(99,101,255,0.2), rgba(34,211,238,0.1));">📋</div>
+                <div>
+                    <div class="section-title">多选题分析</div>
+                    <div class="section-subtitle">Multi-Select Questions</div>
+                </div>
+            </div>
+
+            <div class="flex gap-2 mb-6" id="multiTabs"></div>
+
+            <div id="multiContent"></div>
+        </div>
+
+        <!-- Row 5: Single-Select Questions -->
+        <div class="glass-card p-6 mb-6 fade-in-up delay-5">
+            <div class="section-header">
+                <div class="section-icon" style="background: linear-gradient(135deg, rgba(34,197,94,0.2), rgba(168,85,247,0.1));">📝</div>
+                <div>
+                    <div class="section-title">单选题分析</div>
+                    <div class="section-subtitle">Single-Select Questions</div>
+                </div>
+            </div>
+
+            <div class="flex gap-2 mb-6" id="singleTabs"></div>
+
+            <div id="singleContent"></div>
+        </div>
+
+        <footer class="text-center py-8 text-slate-500 text-sm fade-in-up delay-5">
+            <p>数据来源：第一批 - 清闲动态人机工学椅购后调研 | 样本量：373</p>
+            <p class="mt-2">
+                <a href="清闲工学椅调研看板.html" class="text-[#6365FF] hover:text-[#A5B4FC] transition-colors">返回主看板</a>
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        Chart.defaults.color = '#64748B';
+        Chart.defaults.borderColor = 'rgba(99, 101, 255, 0.1)';
+        Chart.defaults.font.family = 'Inter';
+
+        const genderData = {"男": 338, "女": 32, "不便透露": 3};
+        const ageData = {"26-30": 124, "31-35": 97, "36-40": 77, "41-50": 45, "25及以内": 23, "51及以上": 7};
+        const provinceData = {};
+        const occupationData = {"企业职能岗：行政/人力/财务/公关/客服等": 40, "企业研发岗：各类软硬件、研发工程师，产品经理等": 34, "企业管理岗": 28, "政府/事业编单位人员": 25, "企业前端岗：市场/运营/销售/品牌/采购/供应链/店员等": 25, "其他": 24, "平面/工业/室内设计师": 19, "长期居家办公者": 18, "金融/保险/投资从业者": 17, "在校教师或学生": 9};
+        const heightData = {"140-155": 0, "155-160": 3, "160-165": 2, "165-170": 9, "170-175": 16, "175-180": 8, "180-185": 7, "185-190": 4, "190+": 0};
+        const weightData = {"30-50": 1, "50-60": 3, "60-70": 8, "70-80": 8, "80-90": 7, "90-100": 4, "100-110": 1, "110+": 0};
+        const bmiData = {"偏瘦 (<18.5)": 2, "正常 (18.5-24)": 11, "超重 (24-28)": 15, "肥胖 (>=28)": 4};
+        const multiSelectData = [{"question": "9、您为什么想买一把人体工学椅？", "options": {"经常要久坐": 278, "觉得现在椅子不舒服，想尝试工学椅": 146, "身体已经报警（经常酸痛/已诊断病患）": 138, "想要保持更好的体态": 89, "新家/装修的考量": 31, "没尝试过，想试一下效果": 19, "其他〖旧椅子不够舒适〗": 1, "其他〖租房没有提供椅子〗": 1, "其他〖感受新技术〗": 1, "其他〖这个玩意是电动的，我试试〗": 1, "其他〖旧椅子坏了〗": 1}}, {"question": "10、您选择清闲的主要原因有：", "options": {"被电动顶腰动能种草": 220, "被动态人机概念种草（视线跟随，扶手追随）": 208, "被大角度躺倒功能种草": 152, "喜欢一体式椅背": 143, "被脊柱拉伸功能种草": 127, "外观好看": 117, "喜欢海绵的坐感/包裹感": 108, "支持国货": 88, "被独立式脚踏种草": 55, "其他〖背部压力分摊数据〗": 1, "其他〖看中腰靠无极调节〗": 1, "其他〖坐感很好〗": 1, "其他〖贴腰〗": 1, "其他〖看宣发感觉有觉悟，便尝试一下〗": 1, "其他〖主要买过网面 坐了特别膈应人 越好的网面越膈应人 不管是坐垫还是靠背〗": 1, "其他": 1}}, {"question": "13、在家时，您一般会在椅子上进行：", "options": {"对屏游戏": 203, "对屏办公": 175, "玩手机（刷视频/看信息/玩手游）": 110, "(跳过)": 107, "追剧（电脑/平板/手机）": 98, "玩主机游戏（PS/Switch/Xbox）": 54, "写东西/画画": 44, "看电视（壁挂/柜上大显示器）": 41, "吃饭": 20, "睡觉": 18, "其他": 1, "其他〖玩累了眯一会〗": 1, "其他〖设计〗": 1}}, {"question": "17、设置各个部件设置的体验如何？请您选择调节时不够顺畅/轻松，或尺寸/角度不适配的部件：", "options": {"颈枕（高低、前后、曲斜）": 64, "都很适合（无需选择其他项）": 40, "坐垫（长度、宽度）〖偏小〗": 29, "扶手（高低、前后、宽窄、旋转）": 25, "坐垫（长度、宽度）": 20, "颈枕（高低、前后、曲斜）〖偏高〗": 17, "脚踏（高低）": 14, "后仰阻力（大小）": 14, "靠背（顶腰角度调节）": 13, "后仰档位（105°、120°、135°、160°）": 9, "坐垫（长度、宽度）〖小〗": 7, "脚踏（高低）〖偏高〗": 7, "座高（高低）": 7, "座高（高低）〖偏高〗": 6, "后仰阻力（大小）〖偏小〗": 6, "坐垫（长度、宽度）〖偏短〗": 4, "脚踏（高低）〖偏低〗": 4, "其他": 4, "颈枕（高低、前后、曲斜）〖偏前〗": 3, "脚踏（高低）〖高〗": 3, "靠背（顶腰角度调节）〖偏高〗": 3, "颈枕（高低、前后、曲斜）〖偏低〗": 3, "靠背（顶腰角度调节）〖过高〗": 3, "扶手（高低、前后、宽窄、旋转）〖不能固定〗": 2, "坐垫（长度、宽度）〖长度偏短〗": 2, "坐垫（长度、宽度）〖小了〗": 2, "坐垫（长度、宽度）〖太短〗": 2, "颈枕（高低、前后、曲斜）〖不够低〗": 2, "坐垫（长度、宽度）〖长度偏小〗": 2, "脚踏（高低）〖不稳定〗": 1, "扶手（高低、前后、宽窄、旋转）〖外侧角度〗": 1, "颈枕（高低、前后、曲斜）〖想要调的更靠前一点〗": 1, "扶手（高低、前后、宽窄、旋转）〖已被从后仰恢复到正常角度时，扶手会有卡顿〗": 1, "颈枕（高低、前后、曲斜）〖自己操作时稍微有点费劲〗": 1, "扶手（高低、前后、宽窄、旋转）〖宽窄不够，小了点〗": 1, "坐垫（长度、宽度）〖长度短了点〗": 1, "颈枕（高低、前后、曲斜）〖还不够靠前，希望能够支持更往前调整〗": 1, "扶手（高低、前后、宽窄、旋转）〖宽度也不够，希望能够更往两边扩展〗": 1, "脚踏（高低）〖很难调节，且调整了很容易有异响〗": 1, "坐垫（长度、宽度）〖坐深偏小〗": 1, "颈枕（高低、前后、曲斜）〖卡顿〗": 1, "扶手（高低、前后、宽窄、旋转）〖限位力度不够〗": 1, "颈枕（高低、前后、曲斜）〖偏高，曲协默认角度不够舒服，咯头，但向上又无保持力，需要每次调节〗": 1, "靠背（顶腰角度调节）〖对我的身高还好，但感觉设计上可能略高〗": 1, "扶手（高低、前后、宽窄、旋转）〖不够宽，最高不够高〗": 1, "后仰阻力（大小）〖调节大小麻烦〗": 1, "脚踏（高低）〖偏低，建议可以推拉自定义，目前只有两个档位不够，需要中间档〗": 1, "其他〖需要网面 ，目前海绵不够透气〗": 1, "后仰档位（105°、120°、135°、160°）〖档位要猜，盲操不好判断〗": 1, "脚踏（高低）〖垫子容易掉〗": 1, "颈枕（高低、前后、曲斜）〖拿不下来，上下调节不是很顺畅〗": 1, "座高（高低）〖下面的转头不知道怎么用，转了也不知道有没有效果〗": 1, "后仰阻力（大小）〖这个功能不知道怎么用，转了也不知道有没有效果〗": 1, "颈枕（高低、前后、曲斜）〖颈部的调节空间不能够完全支撑整个脖子〗": 1, "坐垫（长度、宽度）〖长度有点短〗": 1, "扶手（高低、前后、宽窄、旋转）〖不能固定角度〗": 1, "坐垫（长度、宽度）〖坐深太小 不太舒服〗": 1, "颈枕（高低、前后、曲斜）〖正坐靠不到颈枕〗": 1, "扶手（高低、前后、宽窄、旋转）〖扶手前后联动比较卡顿〗": 1, "颈枕（高低、前后、曲斜）〖上下调节不够顺畅，需要用力〗": 1, "扶手（高低、前后、宽窄、旋转）〖起身扶手会因为不固定会移动，最好是能多一个可调节宽窄的按钮或部件，在不需要调节的时候锁住〗": 1, "坐垫（长度、宽度）〖座椅深度不够〗": 1, "颈枕（高低、前后、曲斜）〖不够顺畅〗": 1, "颈枕（高低、前后、曲斜）〖头枕高度不好调节，躺下之后受力点会变〗": 1, "扶手（高低、前后、宽窄、旋转）〖宽窄无法固定，过于难受〗": 1, "坐垫（长度、宽度）〖对我不够长，而且会不自觉的往下滑〗": 1, "颈枕（高低、前后、曲斜）〖有点紧，需要用力，容易扯过度〗": 1, "扶手（高低、前后、宽窄、旋转）〖按钮做在外面比较好，里面容易误触〗": 1, "坐垫（长度、宽度）〖刚好，不过不能前后移动〗": 1, "颈枕（高低、前后、曲斜）〖颈枕调到最低还是高了点儿〗": 1, "颈枕（高低、前后、曲斜）〖范围不够〗": 1, "扶手（高低、前后、宽窄、旋转）〖角度不够 也不够大〗": 1, "颈枕（高低、前后、曲斜）〖便高，对于170以下身高不友好，颈部靠不到拍〗": 1, "座高（高低）〖不够流畅，感觉不是无极调节，有卡动〗": 1, "颈枕（高低、前后、曲斜）〖前后调节范围可以更大一点，上下调节模式联系参考前后调节的模式〗": 1, "靠背（顶腰角度调节）〖腰部到位了，背部就会差点意思〗": 1, "扶手（高低、前后、宽窄、旋转）〖躺到后，扶手后移还差点意思〗": 1, "其他〖完全躺倒下，感觉压力全集中到了脖子，脖颈支撑负担太大〗": 1, "颈枕（高低、前后、曲斜）〖前后档位不够〗": 1, "靠背（顶腰角度调节）〖不能上下调整〗": 1, "坐垫（长度、宽度）〖不能前后调，而且比较滑〗": 1, "座高（高低）〖太高〗": 1, "扶手（高低、前后、宽窄、旋转）〖前后调节太松〗": 1, "其他〖要骶缺少支撑〗": 1, "颈枕（高低、前后、曲斜）〖比较高，另外感觉坐姿和躺姿需要的角度不同，可能是因为高度不够合适带来的〗": 1, "靠背（顶腰角度调节）〖内侧调节容易误触〗": 1, "后仰档位（105°、120°、135°、160°）〖最大角度时，起来的时候需要用到腰部力量，如果能有助力设计的话就更完美了。〗": 1, "座高（高低）〖偏高了，导致手托的位置最低位置无法匹配，主要是我的桌子是订做的，又无法调一下。〗": 1, "扶手（高低、前后、宽窄、旋转）〖太容易滑动〗": 1, "坐垫（长度、宽度）〖太厚 夏天坐着有点热〗": 1, "颈枕（高低、前后、曲斜）〖勉强够用〗": 1, "坐垫（长度、宽度）〖短〗": 1, "颈枕（高低、前后、曲斜）〖能前后吗？〗": 1, "颈枕（高低、前后、曲斜）〖高了〗": 1, "颈枕（高低、前后、曲斜）〖可调角度不多，而且不好调整〗": 1, "扶手（高低、前后、宽窄、旋转）〖前后不够〗": 1, "坐垫（长度、宽度）〖坐深太浅了，太小了，没法盘腿坐〗": 1, "后仰阻力（大小）〖后仰时候两侧扶手咯吱咯吱的响，不顺滑〗": 1, "脚踏（高低）〖不好调节高低〗": 1, "颈枕（高低、前后、曲斜）〖偏高最低档也感觉无法支撑到脖子〗": 1, "扶手（高低、前后、宽窄、旋转）〖宽窄调整不好用，手臂靠上去后就会回归最宽角度〗": 1, "后仰档位（105°、120°、135°、160°）〖无法锁定后仰角度〗": 1, "坐垫（长度、宽度）〖长度偏小，或者说无法调整前后位置〗": 1, "颈枕（高低、前后、曲斜）〖偏低.感觉有晃动〗": 1, "颈枕（高低、前后、曲斜）〖调低需要挺大用力〗": 1, "扶手（高低、前后、宽窄、旋转）〖宽窄有点灵敏〗": 1, "坐垫（长度、宽度）〖太短腿部支撑不够〗": 1, "扶手（高低、前后、宽窄、旋转）〖前后浮动不大〗": 1, "后仰档位（105°、120°、135°、160°）〖需要直起腰才能调解〗": 1, "坐垫（长度、宽度）〖偏小，对胖人不友好，应该大点，最好能前后调解〗": 1, "靠背（顶腰角度调节）〖按键在非常规坐姿下，有可能被挤压按下，可以考虑按键再内收一些，或者做到外侧〗": 1, "座高（高低）〖小腿往右侧并且往后收时，偶尔会压到拉杆导致座椅下降〗": 1, "脚踏（高低）〖拆下的支撑无处收纳〗": 1, "后仰档位（105°、120°、135°、160°）〖档位不清晰〗": 1, "坐垫（长度、宽度）〖坐垫不可调〗": 1, "颈枕（高低、前后、曲斜）〖曲斜角度调节有点松动，需要阻尼感保证支撑性（重点）〗": 1, "坐垫（长度、宽度）〖坐深可以再调大一点（非必要）〗": 1, "靠背（顶腰角度调节）〖腰部顶高之后，腰部下方支撑欠点火候。〗": 1, "其他〖扶手高低调节时，需要一根手指固定住扶手高度再松开调节板，如果不扶着直接松开调节板扶手会在调节板卡住之前下降（至于下降多少得看松开手速）。还有就是上下调节档位可能不够清晰，可以优化一下，有的时候可能就不知道左右是不是一样高，还得调到最高或者最低再一档一档数。）〗": 1, "其他〖热〗": 1, "靠背（顶腰角度调节）〖如果能多区域调节更好〗": 1, "后仰档位（105°、120°、135°、160°）〖四档太少了〗": 1, "颈枕（高低、前后、曲斜）〖坐着调节上下有一点难度〗": 1, "扶手（高低、前后、宽窄、旋转）〖开始不熟悉，对目前扶手到什么程度无法辨别〗": 1, "坐垫（长度、宽度）〖坐深不够，且不可调〗": 1, "靠背（顶腰角度调节）〖顶腰的位置有时候感觉有点奇怪〗": 1, "脚踏（高低）〖脚踏有点高了，而且可调节程度有点差〗": 1, "靠背（顶腰角度调节）〖靠背不透气〗": 1, "扶手（高低、前后、宽窄、旋转）〖调节腰靠时，会蹭到〗": 1, "坐垫（长度、宽度）〖不够透气〗": 1, "其他〖塑料件过多，滑轮与木地板接触有声音〗": 1, "颈枕（高低、前后、曲斜）〖头部一用力就容易移动〗": 1, "颈枕（高低、前后、曲斜）〖调节起来不太方便〗": 1, "后仰档位（105°、120°、135°、160°）〖够起来有些别扭〗": 1, "脚踏（高低）〖固定太死，调节不了〗": 1, "颈枕（高低、前后、曲斜）〖曲斜调整过松，头枕易沉头，需要手动抬高，没有松紧调节〗": 1, "靠背（顶腰角度调节）〖希望增加记忆功能〗": 1, "扶手（高低、前后、宽窄、旋转）〖宽窄调整后会顶到椅背〗": 1, "颈枕（高低、前后、曲斜）〖头枕偏高 个子矮的人枕不到〗": 1, "靠背（顶腰角度调节）〖后靠异响 闷热〗": 1, "扶手（高低、前后、宽窄、旋转）〖长度可以再长一点或者前后伸缩行程再多一些〗": 1, "坐垫（长度、宽度）〖偏小，可以宽度可以但测深前缘不够长〗": 1, "脚踏（高低）〖脚踏上部分容易脱落，设计缺陷〗": 1, "颈枕（高低、前后、曲斜）〖稍高，前后提供更多调节幅度〗": 1, "扶手（高低、前后、宽窄、旋转）〖角度不够，提供倾斜角度调节〗": 1, "颈枕（高低、前后、曲斜）〖高低调节问题〗": 1, "颈枕（高低、前后、曲斜）〖前〗": 1, "颈枕（高低、前后、曲斜）〖容易卡不到位〗": 1, "扶手（高低、前后、宽窄、旋转）〖自我感觉靠后〗": 1, "颈枕（高低、前后、曲斜）〖偏高，只能靠头〗": 1, "后仰档位（105°、120°、135°、160°）〖开关可以往椅背移动一下位置〗": 1, "其他〖脚踏可以宽一些〗": 1, "颈枕（高低、前后、曲斜）〖不是很贴合〗": 1, "靠背（顶腰角度调节）〖胸椎无法前后〗": 1, "扶手（高低、前后、宽窄、旋转）〖无法固定宽窄功能〗": 1, "其他〖椅子滑轮无法固定锁住〗": 1, "扶手（高低、前后、宽窄、旋转）〖长度不够〗": 1, "后仰档位（105°、120°、135°、160°）〖竖直角度太直〗": 1, "座高（高低）〖按键会打脚〗": 1, "颈枕（高低、前后、曲斜）〖前后范围再大一些〗": 1, "扶手（高低、前后、宽窄、旋转）〖希望能加上限位和俯仰调节。〗": 1, "坐垫（长度、宽度）〖长度对我这种181的确实不够，而且不能调坐深〗": 1, "脚踏（高低）〖低档我也不知道为什么就是调不到一个舒服的位置〗": 1, "其他〖扶手底盘联动卡涩不顺滑〗": 1, "颈枕（高低、前后、曲斜）〖第一档直坐的时候颈枕还是碰不到脖子 有可能是我脖子前倾比较厉害 但是长期用电脑的基本脖子前倾都很厉害〗": 1, "靠背（顶腰角度调节）〖松散 左右旷量太大 腰部支撑不稳定 容易左右晃 电动顶腰成了摆设  电机推的位置太高了 变成了顶背而不是顶腰 现在平时坐就只能调到最低 只有平躺的时候才能调开电动的按摩一下 属实有点鸡肋〗": 1, "扶手（高低、前后、宽窄、旋转）〖扶手松散 前后容易乱动 左右调宽窄的时候除了最宽的那一档 其他档位手搁上去都容易因为自重把扶手推像最宽的那一档〗": 1, "坐垫（长度、宽度）〖短了 而且不能调节〗": 1, "扶手（高低、前后、宽窄、旋转）〖太滑了〗": 1, "坐垫（长度、宽度）〖不够长〗": 1, "颈枕（高低、前后、曲斜）〖太高，调整到最低都很高〗": 1, "靠背（顶腰角度调节）〖调节的时候要么肩颈左右位置凸出来要么腰凸出来，不是特别和谐〗": 1, "后仰档位（105°、120°、135°、160°）〖要是有1-2档中间的档位就好了，1档太直，2档太斜，办公都有点不舒服〗": 1, "坐垫（长度、宽度）〖坐深太浅〗": 1, "后仰阻力（大小）〖感觉没做几天那个最大阻力就不够用了〗": 1, "脚踏（高低）〖有更多选择就好了〗": 1, "坐垫（长度、宽度）〖偏小，长度不够〗": 1, "后仰档位（105°、120°、135°、160°）〖档位数量不够〗": 1, "坐垫（长度、宽度）〖坐深太短 无法调节〗": 1, "扶手（高低、前后、宽窄、旋转）〖更长一点较好〗": 1, "颈枕（高低、前后、曲斜）〖上下调整初始阻力大，微调困难〗": 1, "靠背（顶腰角度调节）〖最低点过高〗": 1, "扶手（高低、前后、宽窄、旋转）〖联动顿挫〗": 1, "后仰档位（105°、120°、135°、160°）〖希望有前倾角度〗": 1, "坐垫（长度、宽度）〖坐深过浅〗": 1, "扶手（高低、前后、宽窄、旋转）〖可以再宽和柔软一点〗": 1, "后仰阻力（大小）〖大 我在地毯上用〗": 1, "颈枕（高低、前后、曲斜）〖半躺时有点高了，后脑勺在颈枕上〗": 1, "后仰档位（105°、120°、135°、160°）〖档位有点少〗": 1, "其他〖部分位置比较尖锐或锋利，容易划伤身体〗": 1, "靠背（顶腰角度调节）〖屁股得坐的够深才行〗": 1, "颈枕（高低、前后、曲斜）〖调整不够丝滑，而且不能完全卡卡住〗": 1, "扶手（高低、前后、宽窄、旋转）〖太松了，没有卡扣，手一动扶手也跟着动〗": 1, "坐垫（长度、宽度）〖坐垫深度不能调节〗": 1, "颈枕（高低、前后、曲斜）〖调到最低和我也不适配〗": 1, "靠背（顶腰角度调节）〖骶骨支撑弱，顶高之后肩膀悬空〗": 1, "后仰档位（105°、120°、135°、160°）〖不能前倾〗": 1, "后仰阻力（大小）〖还要我转多少圈〗": 1, "坐垫（长度、宽度）〖坐垫偏短〗": 1, "扶手（高低、前后、宽窄、旋转）〖不能仰角〗": 1, "座高（高低）〖偏高,，〗": 1, "扶手（高低、前后、宽窄、旋转）〖有点松〗": 1, "扶手（高低、前后、宽窄、旋转）〖不能上翘〗": 1, "坐垫（长度、宽度）〖不能前后调坐深〗": 1, "后仰阻力（大小）〖180斤以上阻力太小〗": 1, "后仰档位（105°、120°、135°、160°）〖不顺畅 容易卡顿〗": 1, "扶手（高低、前后、宽窄、旋转）〖阻尼感太轻太松了〗": 1, "后仰档位（105°、120°、135°、160°）〖不够多〗": 1, "颈枕（高低、前后、曲斜）〖每级差别大〗": 1, "后仰档位（105°、120°、135°、160°）〖增加档位〗": 1, "颈枕（高低、前后、曲斜）〖对矮体型特别不友好〗": 1, "靠背（顶腰角度调节）〖太热〗": 1, "扶手（高低、前后、宽窄、旋转）〖太松垮误触很多〗": 1, "后仰档位（105°、120°、135°、160°）〖想要110°〗": 1, "扶手（高低、前后、宽窄、旋转）〖扶手不能锁定，〗": 1, "其他〖建议给轮子增加锁定功能〗": 1, "扶手（高低、前后、宽窄、旋转）〖前后伸缩不够，手经常悬空〗": 1, "靠背（顶腰角度调节）〖没有智能智能追腰〗": 1, "其他〖坐垫闷热〗": 1, "坐垫（长度、宽度）〖不能调节〗": 1, "扶手（高低、前后、宽窄、旋转）〖窄〗": 1, "脚踏（高低）〖会掉〗": 1, "颈枕（高低、前后、曲斜）〖高度不够顺畅〗": 1, "坐垫（长度、宽度）〖坐垫偏小，腰托顶起来屁股容易往前滑〗": 1, "坐垫（长度、宽度）〖太小〗": 1, "座高（高低）〖需要很大㎏才能压下去〗": 1, "靠背（顶腰角度调节）〖不能同时支撑臀部和腰部〗": 1, "坐垫（长度、宽度）〖不能调教座深〗": 1, "脚踏（高低）〖脚垫太薄，会硌脚〗": 1, "扶手（高低、前后、宽窄、旋转）〖低〗": 1, "扶手（高低、前后、宽窄、旋转）〖太松，调节范围再多一点〗": 1, "其他〖正像一位用户说的，如果椅子倾斜有锁止机构就更好了。〗": 1, "靠背（顶腰角度调节）〖想顶腰力度大一点的话，就很高，顶不对位置〗": 1, "坐垫（长度、宽度）〖太短了，一度因为这个想退货，最后权衡之下留下来〗": 1, "脚踏（高低）〖希望档位更多〗": 1, "后仰阻力（大小）〖有点滑〗": 1, "扶手（高低、前后、宽窄、旋转）〖按照客服舒适的高度非升降桌调整不到舒适区域〗": 1, "靠背（顶腰角度调节）〖稍微有点高〗": 1, "靠背（顶腰角度调节）〖稍许过高〗": 1, "扶手（高低、前后、宽窄、旋转）〖感觉有点短，因人而异吧〗": 1, "坐垫（长度、宽度）〖坐深确实有点小〗": 1, "颈枕（高低、前后、曲斜）〖上下调整太难。〗": 1, "后仰档位（105°、120°、135°、160°）〖我感觉这个真的没必要，一个档自由调节，调到想要的位置把拨片调回去锁定位置。〗": 1, "坐垫（长度、宽度）〖坐垫长度有点短〗": 1, "后仰阻力（大小）〖因为那个档位的问题找不到合适角度。〗": 1, "颈枕（高低、前后、曲斜）〖比较难调〗": 1, "扶手（高低、前后、宽窄、旋转）〖角度太小〗": 1, "坐垫（长度、宽度）〖长度太短〗": 1, "靠背（顶腰角度调节）〖骶骨支撑不到位〗": 1, "扶手（高低、前后、宽窄、旋转）〖太容易变动滑动了〗": 1, "坐垫（长度、宽度）〖需要可以调节深浅〗": 1, "座高（高低）〖不够低〗": 1, "脚踏（高低）〖最好的椅子不需要这种东西 脚踏总没有踩地稳〗": 1, "靠背（顶腰角度调节）〖不知调高后顶背是否科学〗": 1, "扶手（高低、前后、宽窄、旋转）〖后仰时前后阻尼卡顿〗": 1, "扶手（高低、前后、宽窄、旋转）〖偏窄，角度不够〗": 1, "颈枕（高低、前后、曲斜）〖高低调节不是很方便，是否可以和前后调节一样加个按钮〗": 1, "颈枕（高低、前后、曲斜）〖高低调节不顺滑，最低不够低〗": 1, "后仰阻力（大小）〖大〗": 1, "脚踏（高低）〖不太拧的动〗": 1, "其他〖扶手太容易向外位移，扶着扶手站起来，扶手就会向外斜，还需要频繁掰回来〗": 1, "扶手（高低、前后、宽窄、旋转）〖前后移动太松〗": 1, "其他〖对于大体格来说椅背肩部偏小，座垫最好能前后调节来提供臀部支撑〗": 1, "颈枕（高低、前后、曲斜）〖太高了 简直不适合 170 以下的人 枕不到头上〗": 1, "扶手（高低、前后、宽窄、旋转）〖太短了〗": 1, "坐垫（长度、宽度）〖坐深有点浅勉强能坐进去〗": 1, "扶手（高低、前后、宽窄、旋转）〖太容易变形〗": 1, "颈枕（高低、前后、曲斜）〖上下调整有点费力〗": 1, "扶手（高低、前后、宽窄、旋转）〖扶手比较松垮 很容易错位〗": 1, "座高（高低）〖最低的位置还是偏高 需要配合踏板〗": 1, "颈枕（高低、前后、曲斜）〖前后调节有点涩〗": 1, "扶手（高低、前后、宽窄、旋转）〖高低可否更多档位〗": 1, "后仰档位（105°、120°、135°、160°）〖需要增加一个档位〗": 1, "其他〖推动时候缺乏牢固的施力点〗": 1, "后仰档位（105°、120°、135°、160°）〖时而无法拨动〗": 1, "颈枕（高低、前后、曲斜）〖阻尼感不好，噪音大〗": 1, "颈枕（高低、前后、曲斜）〖调整不够顺滑〗": 1, "扶手（高低、前后、宽窄、旋转）〖太短，够不到桌子〗": 1, "后仰档位（105°、120°、135°、160°）〖差个档位的感觉 110-115可能就很舒服〗": 1, "颈枕（高低、前后、曲斜）〖可以再低一点就好，最好是把肩膀跟头一起顶起，不是单独顶起头部，我颈椎间盘突出，所以单独顶起头部，舒适性差点〗": 1, "其他〖靠背用网面，坐垫屁股海绵加硬一点〗": 1, "颈枕（高低、前后、曲斜）〖颈枕对我来说偏高，调到最低顶不到颈部就很无语〗": 1, "靠背（顶腰角度调节）〖顶到腰部，背部就会有点不贴，背部上方靠背不够宽，中间感觉凹的地方有点轻微夹背〗": 1, "扶手（高低、前后、宽窄、旋转）〖固定不够，容易误碰改变角度〗": 1, "坐垫（长度、宽度）〖座垫长度偏短，没有前后调节致命伤〗": 1, "座高（高低）〖调到最低还是稍高一小点〗": 1, "颈枕（高低、前后、曲斜）〖角度调节太松了〗": 1, "后仰档位（105°、120°、135°、160°）〖初始角度过直〗": 1, "座高（高低）〖调节不灵敏〗": 1, "颈枕（高低、前后、曲斜）〖对168cm，最低还是偏高，只能撑到后脑勺〗": 1, "扶手（高低、前后、宽窄、旋转）〖调节很松垮，支撑不好，起身时抓扶容易前后位移，或者宽窄被误调整。〗": 1, "座高（高低）〖最低仍偏高〗": 1, "扶手（高低、前后、宽窄、旋转）〖可可以再调高一点〗": 1, "后仰档位（105°、120°、135°、160°）〖档位可以再多一点〗": 1, "座高（高低）〖座椅最低可以再低一点〗": 1, "脚踏（高低）〖角度高低可以有更多选择〗": 1, "颈枕（高低、前后、曲斜）〖颈枕俯仰很松，躺倒和工作要上下调整不是一个位置不用调就都舒服〗": 1, "扶手（高低、前后、宽窄、旋转）〖整个太松垮不太能固定撑着调整坐姿会改变扶手位置〗": 1, "坐垫（长度、宽度）〖偏小要很好的坐姿就刚刚好〗": 1, "靠背（顶腰角度调节）〖偏低〗": 1, "扶手（高低、前后、宽窄、旋转）〖不够宽〗": 1, "靠背（顶腰角度调节）〖靠背很舒服，但是气压柱升起更多人是顶背而不是腰〗": 1, "扶手（高低、前后、宽窄、旋转）〖宽窄和旋转调节都太松〗": 1, "坐垫（长度、宽度）〖坐垫偏小，尤其是长度不够〗": 1, "靠背（顶腰角度调节）〖稍微有一点顶，再下去一点就好了〗": 1, "扶手（高低、前后、宽窄、旋转）〖太松〗": 1, "后仰档位（105°、120°、135°、160°）〖需要前倾档位〗": 1, "其他〖座垫深度不够〗": 1, "后仰档位（105°、120°、135°、160°）〖档位固定  选择较少〗": 1, "靠背（顶腰角度调节）〖靠背偏窄〗": 1, "坐垫（长度、宽度）〖没有前后调节〗": 1, "坐垫（长度、宽度）〖不能动〗": 1, "坐垫（长度、宽度）〖短了点〗": 1, "其他〖轮子不灵敏〗": 1, "其他〖没有一体脚撑〗": 1, "颈枕（高低、前后、曲斜）〖有点松〗": 1, "其他〖坐垫有点短，希望是金属框架〗": 1, "其他〖调节腰靠靠背会空〗": 1, "坐垫（长度、宽度）〖坐深不够〗": 1, "颈枕（高低、前后、曲斜）〖移动不顺畅〗": 1, "颈枕（高低、前后、曲斜）〖前后调节不顺畅〗": 1, "颈枕（高低、前后、曲斜）〖前顶的太多不舒服〗": 1, "靠背（顶腰角度调节）〖躺时支撑不足〗": 1, "坐垫（长度、宽度）〖坐深太长，坐不到底，希望开发 40 厘米的〗": 1, "颈枕（高低、前后、曲斜）〖偏低偏后〗": 1, "靠背（顶腰角度调节）〖过低〗": 1, "扶手（高低、前后、宽窄、旋转）〖过低〗": 1, "坐垫（长度、宽度）〖小了点，腿漏了一节在外〗": 1, "座高（高低）〖低了点，腿长〗": 1, "其他〖脚踏用久了.脚踝背部有压迫感〗": 1, "后仰档位（105°、120°、135°、160°）〖档位少了〗": 1, "颈枕（高低、前后、曲斜）〖希望能在低一点，170身高只要稍微做斜一点就够不到脖子了，要做得非常标准。且头枕左右摇晃有点大，这个价位不应该〗": 1, "扶手（高低、前后、宽窄、旋转）〖希望以后能升级360度，最好是提供配件给老顾客购买〗": 1, "靠背（顶腰角度调节）〖升高感觉不像是顶腰，感觉想要顶到背上了〗": 1, "扶手（高低、前后、宽窄、旋转）〖升到最高还是偏低〗": 1, "后仰档位（105°、120°、135°、160°）〖没有找到锁止功能〗": 1, "脚踏（高低）〖2挡有点少〗": 1, "颈枕（高低、前后、曲斜）〖我合适，我老婆偏高〗": 1, "扶手（高低、前后、宽窄、旋转）〖前后没有锁止机构〗": 1, "其他〖有点小热〗": 1, "颈枕（高低、前后、曲斜）〖再稍微大一点，脖子地方还是有空感〗": 1, "扶手（高低、前后、宽窄、旋转）〖太短〗": 1, "坐垫（长度、宽度）〖太窄，太短〗": 1, "颈枕（高低、前后、曲斜）〖偏后〗": 1, "后仰阻力（大小）〖不丝滑〗": 1, "颈枕（高低、前后、曲斜）〖有些左右晃动，而且有噪音〗": 1, "靠背（顶腰角度调节）〖需要调比较久才能调节到合适自己的位置〗": 1, "颈枕（高低、前后、曲斜）〖左右太松散〗": 1, "扶手（高低、前后、宽窄、旋转）〖阻尼太松〗": 1, "靠背（顶腰角度调节）〖松〗": 1, "颈枕（高低、前后、曲斜）〖颈枕部位后仰使劲时会下落〗": 1, "扶手（高低、前后、宽窄、旋转）〖可变角度不够〗": 1, "脚踏（高低）〖脚踏占用空间太大〗": 1, "扶手（高低、前后、宽窄、旋转）〖角度不够〗": 1, "后仰阻力（大小）〖阻尼有点小〗": 1, "颈枕（高低、前后、曲斜）〖颈枕向前调整距离可以再多谢〗": 1, "靠背（顶腰角度调节）〖除左右两侧支撑外，建议增加脊柱中心支撑，一档时腰部支撑位置较可以再靠下点〗": 1, "颈枕（高低、前后、曲斜）〖希望可以增加一个关节增加高低的调节〗": 1, "靠背（顶腰角度调节）〖希望可以增加对骶骨的支称〗": 1, "后仰档位（105°、120°、135°、160°）〖希望可以无极调节或者更多档位〗": 1, "坐垫（长度、宽度）〖偏小偏窄〗": 1, "靠背（顶腰角度调节）〖有点低，后背中段感觉不能全部贴合〗": 1, "颈枕（高低、前后、曲斜）〖坐姿调节头枕高度很难发力〗": 1, "座高（高低）〖最低档偏高〗": 1, "颈枕（高低、前后、曲斜）〖上下调节不够丝滑，我以为是类似车上头枕的调节方式〗": 1, "坐垫（长度、宽度）〖有点偏短，比我现在的办公椅〗": 1, "扶手（高低、前后、宽窄、旋转）〖偏宽〗": 1, "脚踏（高低）〖上面的踏容易掉〗": 1, "后仰阻力（大小）〖过小〗": 1, "扶手（高低、前后、宽窄、旋转）〖经常滑动〗": 1, "坐垫（长度、宽度）〖长度不够〗": 1, "颈枕（高低、前后、曲斜）〖前后可调范围小，第一档贴合不够，角度调节比较松，动起来就会调回初始或者小角度〗": 1, "扶手（高低、前后、宽窄、旋转）〖偏低〗": 1, "颈枕（高低、前后、曲斜）〖往前范围不够大，正坐时对头部的支撑不足〗": 1, "靠背（顶腰角度调节）〖需加强对骶骨的支撑〗": 1, "扶手（高低、前后、宽窄、旋转）〖外翻旋转角度太小〗": 1, "后仰档位（105°、120°、135°、160°）〖应增加椅子前倾功能〗": 1, "坐垫（长度、宽度）〖长度严重偏短〗": 1, "后仰阻力（大小）〖椅子后仰可调节，但大角度后仰时椅子整体会滑动〗": 1, "脚踏（高低）〖可以设计成无级调节〗": 1, "其他〖脊柱拉伸功能可以设计成可调节，把椅子扶手设计成翻盖式，内设控制面板，这样设计可以大幅度提高椅子的科技感和档次〗": 1, "扶手（高低、前后、宽窄、旋转）〖不够宽大〗": 1, "坐垫（长度、宽度）〖坐垫短！〗": 1, "扶手（高低、前后、宽窄、旋转）〖宽窄太容易变化〗": 1, "坐垫（长度、宽度）〖坐垫有点闷热〗": 1, "颈枕（高低、前后、曲斜）〖费劲〗": 1, "脚踏（高低）〖脚踏不能活动〗": 1, "颈枕（高低、前后、曲斜）〖卡的不够牢靠，有时会脱位〗": 1, "扶手（高低、前后、宽窄、旋转）〖有点短〗": 1, "颈枕（高低、前后、曲斜）〖上下调节有点费劲，然后又有点卡不住，头部下压容易把头枕压下去〗": 1, "坐垫（长度、宽度）〖坐深不能调节，有点太短〗": 1, "扶手（高低、前后、宽窄、旋转）〖转向略松 容易误调〗": 1, "坐垫（长度、宽度）〖偏短，或者增加一定的前后移动〗": 1, "颈枕（高低、前后、曲斜）〖不能顺滑的调节到想要的地方〗": 1, "扶手（高低、前后、宽窄、旋转）〖总是觉得手累〗": 1, "颈枕（高低、前后、曲斜）〖不够靠前 我现在都再弄一个汽车头枕绑着〗": 1, "后仰档位（105°、120°、135°、160°）〖4挡还是不够全面〗": 1, "脚踏（高低）〖其实有脚踏就需要电脑桌更加宽 我现在是把电脑桌使劲往外拖 脚踏靠墙才能舒展〗": 1, "扶手（高低、前后、宽窄、旋转）〖不够宽还有不能翘起〗": 1, "扶手（高低、前后、宽窄、旋转）〖有点灵活〗": 1, "后仰档位（105°、120°、135°、160°）〖少〗": 1, "颈枕（高低、前后、曲斜）〖旋转松紧不好调节，太松一碰就掉到最低了〗": 1, "靠背（顶腰角度调节）〖感觉调节到合适的比较麻烦，而且进行按摩功能之后还需要每次都重新调节，很不方便〗": 1, "扶手（高低、前后、宽窄、旋转）〖可调节的左右幅度不太够，希望也可以优化一下别的细节〗": 1, "后仰档位（105°、120°、135°、160°）〖二挡三挡之间差距过大，希望能多一个档位，每个角度间隔少一点〗": 1, "颈枕（高低、前后、曲斜）〖调节不到合适的位置〗": 1, "靠背（顶腰角度调节）〖坐多之后有异响〗": 1}}, {"question": "23、您对脚踏的设计是否满意？请选择符合您感受的情况：", "options": {"独立式外形、功能（脚踏/脚托）设计都满意": 186, "觉得独立式外形有点占地方": 126, "觉得脚踏板的高度不适配（偏高/偏低）": 48, "觉得脚托的海绵舒适度不够": 34, "觉得脚托的高度不适配（偏高/偏低）": 22, "完全用不到这个独立式脚踏": 16, "觉得脚踏板的长宽度不适配（偏大/偏小）": 14, "其他〖容易掉〗": 1, "其他〖不好收纳，感觉是座椅高度的妥协〗": 1, "其他〖还行吧〗": 1, "其他〖个人使用习惯暂时用不到〗": 1, "其他〖可以根据腿长及支撑习惯随意摆放，脚托功能非常好，占地方就没办法了〗": 1, "其他〖有点容易位移〗": 1, "其他〖既然是独立的可以做成高低伸缩，而且踏板上部容易脱落〗": 1, "其他〖增高脚拆下不好收纳〗": 1, "其他〖建议可以上架一个单独的脚撑(不带脚踏) ，有的腿长的不需要脚踏。脚踏也非常占地方。〗": 1, "其他〖稍微麻烦了点〗": 1, "其他〖应该与椅子设计一体。可参考芝华士椅子脚托。〗": 1, "其他〖一体会方便很多〗": 1, "其他〖底部镂空就方便 两侧有支撑即可〗": 1, "其他〖脚托下一步可否设置成可上下手动调节的？〗": 1, "其他〖用用会掉〗": 1, "其他〖调节功能较少〗": 1, "其他〖地脏，还未使用〗": 1, "其他〖这东西就不人体工学 椅子桌子不合适才会用这个〗": 1, "其他〖用得少〗": 1, "其他〖脚托材质最好用耐磨耐脏的，因为有的时候懒得拖鞋〗": 1, "其他〖高度调节能简单点不拆零件最好〗": 1, "其他〖办公环境无处安放脚踏〗": 1, "其他〖太滑了，脚垫〗": 1, "其他〖上面腿托能快拆就好了〗": 1, "其他〖有时候会觉得如果有个能移动的轮子有多好。不想移动时又能锁定〗": 1, "其他〖其他场景用，办公的时候用不到〗": 1, "其他〖上面托容易掉〗": 1, "其他〖脚托海绵薄了点，躺下时虽然不硌脚但希望能像头枕那样软比较好。然后是独立的脚托实际上可以像赫曼米勒那样做大中小不同尺寸，现在的仍旧是传统大小只能并腿靠着，稍微分开点腿就在两边边缘上会硌小腿〗": 1, "其他〖脚踏高度很容易设计成无级可调式，这样能满足更多不同身材的用户及儿童使用〗": 1, "其他〖不能前后摇摆活动脚腕〗": 1, "其他〖高度调节很不方便〗": 1, "其他〖因为我都书桌偏窄而且贴墙放，所以要舒适使用必须把显示器和键盘往桌边移。做手工的时候就只能放弃使用脚凳，蛮可惜的。〗": 1, "其他〖底座刮到脚〗": 1}}, {"question": "26、您是否满足以下情况：", "options": {"以前有买过腰靠/腰枕": 221, "对人体工学有过一定程度的了解/研究": 202, "偶尔会去按摩": 201, "会有意识地关注或矫正体态": 165, "偶尔/经常会去健身": 159, "以上都没有": 10, "(空)": 6}}];
+        const singleSelectData = [{"question": "6、您最早是在什么渠道了解到的清闲产品？", "options": {"Bilibili": 210, "抖音": 63, "淘宝/京东": 27, "小红书": 26, "同事/朋友/亲属推荐": 18, "线下门店": 15, "微信/朋友圈/视频号": 8, "其他〖微博〗": 4, "其他〖b站〗": 1, "没印象了": 1}}, {"question": "11、您目前使用该椅子的位置是", "options": {"家里-书房": 192, "办公室": 107, "家里-卧室": 49, "家里-客厅": 18, "家里-不固定位置": 7}}, {"question": "14、您的办公室类型是哪种？", "options": {"(跳过)": 266, "独间：房间里只有一个工位或极少个": 42, "开放式：一长排连桌，没有格板": 30, "大格子间：每一个工位都有较高格板，隐秘性强": 25, "小格子间：格板略少或略低，隐秘性适中": 7, "其他〖多张单张桌子排列〗": 1, "其他〖大办公室独立办公桌〗": 1, "其他": 1}}, {"question": "18、您目前使用频率较多的后仰档位是：", "options": {"第二档，120°": 89, "第一档，105°": 61, "第二档，120°┋第三档，135°": 38, "第三档，135°": 34, "第一档，105°┋第二档，120°": 30, "第一档，105°┋第四档，160°": 22, "第二档，120°┋第四档，160°": 16, "第四档，160°": 15, "第一档，105°┋第二档，120°┋第四档，160°": 12, "第一档，105°┋第二档，120°┋第三档，135°┋第四档，160°": 12, "第三档，135°┋第四档，160°": 12, "第一档，105°┋第三档，135°": 10, "第二档，120°┋第三档，135°┋第四档，160°": 9, "第一档，105°┋第二档，120°┋第三档，135°": 7, "第一档，105°┋第三档，135°┋第四档，160°": 6}}, {"question": "27、您是否愿意接受我们进一步的微信/电话/视频采访，以便我们为您提供更好的服务和改进产品", "options": {"愿意": 212, "不了": 161}}];
+        const totalUsers = 373;
+
+        // ===== GENDER CHART =====
+        const genderCtx = document.getElementById('genderChart').getContext('2d');
+        new Chart(genderCtx, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(genderData),
+                datasets: [{
+                    data: Object.values(genderData),
+                    backgroundColor: ['#6365FF', '#E879F9', '#22D3EE'],
+                    borderWidth: 0,
+                    hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { padding: 20, usePointStyle: true, pointStyle: 'circle' } }
+                },
+                cutout: '65%'
+            }
+        });
+
+        // ===== AGE CHART =====
+        const ageCtx = document.getElementById('ageChart').getContext('2d');
+        new Chart(ageCtx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(ageData),
+                datasets: [{
+                    data: Object.values(ageData),
+                    backgroundColor: ['#6365FF', '#818CF8', '#A5B4FC', '#C7D2FE', '#E879F9', '#F0ABFC', '#A855F7'],
+                    borderRadius: 6,
+                    barThickness: 32
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(99, 101, 255, 0.05)' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // ===== PROVINCE CHART =====
+        const provinceEl = document.getElementById('provinceChart');
+        const provEntries = Object.entries(provinceData).sort((a, b) => b[1] - a[1]).slice(0, 10);
+        const provColors = ['#6365FF', '#818CF8', '#A5B4FC', '#C7D2FE', '#E879F9', '#F0ABFC', '#22D3EE', '#5EEAD4', '#22C55E', '#86EFAC'];
+
+        provEntries.forEach((item, i) => {
+            const div = document.createElement('div');
+            div.className = 'bar-chart-item';
+            const pct = (item[1] / totalUsers * 100).toFixed(1);
+            div.innerHTML = `
+                <span class="bar-label">${item[0]}</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width: 0%; background: ${provColors[i]}; min-width: 40px;" data-width="${pct}%">
+                        ${pct}%
+                    </div>
+                </div>
+                <span class="bar-value">${item[1]}人</span>
+            `;
+            provinceEl.appendChild(div);
+        });
+
+        setTimeout(() => {
+            document.querySelectorAll('#provinceChart .bar-fill').forEach(bar => {
+                bar.style.width = bar.dataset.width;
+            });
+        }, 500);
+
+        // ===== OCCUPATION CHART =====
+        const occEl = document.getElementById('occupationChart');
+        const occEntries = Object.entries(occupationData).sort((a, b) => b[1] - a[1]).slice(0, 8);
+        const occColors = ['#6365FF', '#818CF8', '#A5B4FC', '#C7D2FE', '#E879F9', '#F0ABFC', '#22D3EE', '#5EEAD4'];
+
+        occEntries.forEach((item, i) => {
+            const div = document.createElement('div');
+            div.className = 'bar-chart-item';
+            const pct = (item[1] / totalUsers * 100).toFixed(1);
+            div.innerHTML = `
+                <span class="bar-label">${item[0]}</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width: 0%; background: ${occColors[i]}; min-width: 35px;" data-width="${pct}%">
+                        ${pct}%
+                    </div>
+                </div>
+                <span class="bar-value">${item[1]}人</span>
+            `;
+            occEl.appendChild(div);
+        });
+
+        setTimeout(() => {
+            document.querySelectorAll('#occupationChart .bar-fill').forEach(bar => {
+                bar.style.width = bar.dataset.width;
+            });
+        }, 600);
+
+        // ===== HEIGHT CHART =====
+        const heightCtx = document.getElementById('heightChart').getContext('2d');
+        new Chart(heightCtx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(heightData),
+                datasets: [{
+                    data: Object.values(heightData),
+                    backgroundColor: 'rgba(34, 211, 238, 0.7)',
+                    borderRadius: 4,
+                    barThickness: 28
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(99, 101, 255, 0.05)' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // ===== WEIGHT CHART =====
+        const weightCtx = document.getElementById('weightChart').getContext('2d');
+        new Chart(weightCtx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(weightData),
+                datasets: [{
+                    data: Object.values(weightData),
+                    backgroundColor: 'rgba(251, 146, 60, 0.7)',
+                    borderRadius: 4,
+                    barThickness: 28
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(99, 101, 255, 0.05)' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // ===== BMI CHART =====
+        const bmiCtx = document.getElementById('bmiChart').getContext('2d');
+        new Chart(bmiCtx, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(bmiData),
+                datasets: [{
+                    data: Object.values(bmiData),
+                    backgroundColor: ['#22D3EE', '#22C55E', '#FB923C', '#EF4444'],
+                    borderWidth: 0,
+                    hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { padding: 15, usePointStyle: true, pointStyle: 'circle', font: { size: 10 } }
+                    }
+                },
+                cutout: '60%'
+            }
+        });
+
+        // ===== MULTI-SELECT TABS =====
+        const multiTabsEl = document.getElementById('multiTabs');
+        const multiContentEl = document.getElementById('multiContent');
+        const barColors = ['#6365FF', '#818CF8', '#A5B4FC', '#C7D2FE', '#E879F9', '#F0ABFC', '#22D3EE', '#5EEAD4', '#22C55E', '#86EFAC', '#A855F7', '#C084FC'];
+
+        if (multiSelectData.length > 0) {
+            multiSelectData.forEach((item, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'tab-btn' + (idx === 0 ? ' active' : '');
+                btn.textContent = item.question.substring(0, 20) + '...';
+                btn.onclick = () => switchMultiTab(idx);
+                multiTabsEl.appendChild(btn);
+            });
+
+            multiSelectData.forEach((item, idx) => {
+                const div = document.createElement('div');
+                div.className = 'question-card' + (idx === 0 ? '' : ' hidden');
+                div.id = 'multi-tab-' + idx;
+
+                let html = `<div class="question-title">${item.question}</div>`;
+                const entries = Object.entries(item.options).slice(0, 12);
+                entries.forEach((opt, i) => {
+                    const pct = (opt[1] / totalUsers * 100).toFixed(1);
+                    html += `
+                        <div class="bar-chart-item">
+                            <span class="bar-label">${opt[0]}</span>
+                            <div class="bar-track">
+                                <div class="bar-fill" style="width: 0%; background: ${barColors[i % barColors.length]}; min-width: 35px;" data-width="${pct}%">
+                                    ${pct}%
+                                </div>
+                            </div>
+                            <span class="bar-value">${opt[1]}人</span>
+                        </div>
+                    `;
+                });
+                div.innerHTML = html;
+                multiContentEl.appendChild(div);
+            });
+
+            setTimeout(() => {
+                document.querySelectorAll('#multiContent .bar-fill').forEach(bar => {
+                    bar.style.width = bar.dataset.width;
+                });
+            }, 500);
+        } else {
+            multiTabsEl.innerHTML = '<span class="text-slate-500 text-sm">本批次无多选题</span>';
+        }
+
+        function switchMultiTab(idx) {
+            document.querySelectorAll('#multiContent .question-card').forEach(el => el.classList.add('hidden'));
+            document.getElementById('multi-tab-' + idx).classList.remove('hidden');
+            document.querySelectorAll('#multiTabs .tab-btn').forEach(btn => btn.classList.remove('active'));
+            multiTabsEl.children[idx].classList.add('active');
+        }
+
+        // ===== SINGLE-SELECT TABS =====
+        const singleTabsEl = document.getElementById('singleTabs');
+        const singleContentEl = document.getElementById('singleContent');
+
+        if (singleSelectData.length > 0) {
+            singleSelectData.forEach((item, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'tab-btn' + (idx === 0 ? ' active' : '');
+                btn.textContent = item.question.substring(0, 20) + '...';
+                btn.onclick = () => switchSingleTab(idx);
+                singleTabsEl.appendChild(btn);
+            });
+
+            singleSelectData.forEach((item, idx) => {
+                const div = document.createElement('div');
+                div.className = 'question-card' + (idx === 0 ? '' : ' hidden');
+                div.id = 'single-tab-' + idx;
+
+                let html = `<div class="question-title">${item.question}</div>`;
+                const entries = Object.entries(item.options).sort((a, b) => b[1] - a[1]).slice(0, 10);
+                entries.forEach((opt, i) => {
+                    const pct = (opt[1] / totalUsers * 100).toFixed(1);
+                    html += `
+                        <div class="bar-chart-item">
+                            <span class="bar-label">${opt[0]}</span>
+                            <div class="bar-track">
+                                <div class="bar-fill" style="width: 0%; background: ${barColors[i % barColors.length]}; min-width: 35px;" data-width="${pct}%">
+                                    ${pct}%
+                                </div>
+                            </div>
+                            <span class="bar-value">${opt[1]}人</span>
+                        </div>
+                    `;
+                });
+                div.innerHTML = html;
+                singleContentEl.appendChild(div);
+            });
+
+            setTimeout(() => {
+                document.querySelectorAll('#singleContent .bar-fill').forEach(bar => {
+                    bar.style.width = bar.dataset.width;
+                });
+            }, 600);
+        } else {
+            singleTabsEl.innerHTML = '<span class="text-slate-500 text-sm">本批次无单选题</span>';
+        }
+
+        function switchSingleTab(idx) {
+            document.querySelectorAll('#singleContent .question-card').forEach(el => el.classList.add('hidden'));
+            document.getElementById('single-tab-' + idx).classList.remove('hidden');
+            document.querySelectorAll('#singleTabs .tab-btn').forEach(btn => btn.classList.remove('active'));
+            singleTabsEl.children[idx].classList.add('active');
+        }
+
+        // Scroll animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) observer.unobserve(entry.target);
+            });
+        });
+
+        document.querySelectorAll('.fade-in-up').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>
